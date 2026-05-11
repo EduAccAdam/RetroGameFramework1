@@ -1,4 +1,4 @@
-﻿/*
+/*
     Framework to write a simple retro game in pixel art.
     Copyright (C) 2026  Giovanni Volpintesta
 
@@ -23,6 +23,7 @@ using System;
 using System.Windows.Forms;
 using System.Drawing;
 using RetroGameFramework;
+using System.Threading;
 
 namespace RetroGameDemo
 {
@@ -93,23 +94,23 @@ namespace RetroGameDemo
         // Initialization call, used to customize GameConfig data (used to customize the engine behaviour)
         protected override void OnInitGameConfig(GameConfig GameConfig)
         {
-            GameConfig.Title = "Bouncing Ball";
+            GameConfig.Title = "Adam_Snake";
 
             GameConfig.PixelsMatrixWidth = 64;
             GameConfig.PixelsMatrixHeight = 48;
             GameConfig.PixelSize = 10;
 
-            GameConfig.FrameRate = 12;
+            GameConfig.FrameRate = 10;
 
-            GameConfig.BackgroundColor = System.Drawing.Color.Black;
+            GameConfig.BackgroundColor = System.Drawing.Color.DarkGreen;
             //GameForm.Initializer.ForegroundColor = System.Drawing.Color.White;
-            GameConfig.ForegroundColor = System.Drawing.Color.FromArgb(255, 255, 255);
+            GameConfig.ForegroundColor = System.Drawing.Color.FromArgb(144, 238, 144);
 
             GameConfig.AdditionalColors = new System.Drawing.Color[] {
                 System.Drawing.Color.Red,
                 System.Drawing.Color.Orange,
                 System.Drawing.Color.Yellow,
-                System.Drawing.Color.Green,
+                //System.Drawing.Color.Green,
                 System.Drawing.Color.Cyan,
                 System.Drawing.Color.Blue,
                 System.Drawing.Color.Violet,
@@ -124,7 +125,7 @@ namespace RetroGameDemo
             ballPosition = new float[] { GameConfig.PixelsMatrixWidth / 2, GameConfig.PixelsMatrixHeight / 2 };
 
             // give the fall a speed
-            ballSpeed = new float[] { 2, 2 };
+            ballSpeed = new float[] { 0,0 };
 
             ballStyle.SetColorRemap(1, 2); // start from first additional color;
 
@@ -163,15 +164,7 @@ namespace RetroGameDemo
         {
             int screenWidth = pixels.GetLength(0);
             int screenHeight = pixels.GetLength(1);
-
-            // Draw the background star images at the center of the screen
-            GameUtils.DrawImageOnScreen(pixels, starImage, new Point((int)(screenWidth * 0.25), (int)(screenHeight * 0.25)), starStyle);
-            GameUtils.DrawImageOnScreen(pixels, starImage, new Point((int)(screenWidth * 0.25), (int)(screenHeight * 0.75)), starStyle);
-
-            GameUtils.DrawImageOnScreen(pixels, squareImage, new Point((int)(screenWidth * 0.75), (int)(screenHeight * 0.25)), squareStyle1);
-            GameUtils.DrawImageOnScreen(pixels, squareImage2, new Point((int)(screenWidth * 0.75), (int)(screenHeight * 0.75)), squareStyle2);
-
-            GameUtils.DrawImageOnScreen(pixels, hearthImage, new Point((int)(screenWidth * 0.50), (int)(screenHeight * 0.50)), hearthStyle);
+            
 
             DrawBall(pixels, ballColor); // set the foregorund color in the current ball location
             // GameUtils.DrawImageOnScreen(pixels, ballImage, new Point((int)ballPosition[0], (int)ballPosition[1]), ballStyle);
@@ -181,7 +174,9 @@ namespace RetroGameDemo
         // Its main purpose it's to dispose resources, as the game will end immediately after this call.
         protected override void OnEndGame()
         {
-
+            Console.WriteLine("Fine");
+            Thread.Sleep(1000);
+            Environment.Exit(0);
         }
 
         private void UpdateBallPosition()
@@ -201,12 +196,14 @@ namespace RetroGameDemo
                 // if the ball is going to the left and it went outside the left screen bound,
                 ballPosition[0] += (ballRadius - 0.5f) - ballPosition[0]; // correct the position after the bounce
                 ballSpeed[0] *= -1; // flip the speed direction
+                OnEndGame();
             }
             else if (ballSpeed[0] > 0 && ballPosition[0] + (ballRadius - 0.5) >= GameConfig.PixelsMatrixWidth - 1) // horizontal check to the right
             {
                 // if the ball is going to the right and it went outside the right screen bound,
                 ballPosition[0] -= ballPosition[0] - (GameConfig.PixelsMatrixWidth - 1 - (ballRadius - 0.5f)); // correct the position after the bounce
                 ballSpeed[0] *= -1; // flip the speed direction
+                OnEndGame();
             }
 
             if (ballSpeed[1] < 0 && ballPosition[1] - (ballRadius - 0.5f) <= 0) // vertical check to the top
@@ -214,27 +211,32 @@ namespace RetroGameDemo
                 // if the ball is going up and it went outside the top screen bound,
                 ballPosition[1] += (ballRadius - 0.5f) - ballPosition[1]; // correct the position after the bounce
                 ballSpeed[1] *= -1; // flip the speed direction
+                OnEndGame();
             }
             else if (ballSpeed[1] > 0 && ballPosition[1] + (ballRadius - 0.5f) >= GameConfig.PixelsMatrixHeight - 1) // vertical check to the bottom
             {
                 // if the ball is going down and it went outside the bottom screen bound,
                 ballPosition[1] -= ballPosition[1] - (GameConfig.PixelsMatrixHeight - 1 - (ballRadius - 0.5f)); // correct the position after the bounce
                 ballSpeed[1] *= -1; // flip the speed direction
+                OnEndGame();
             }
         }
 
         private void DrawBall(int[,] pixels, int color)
         {
-            // BALL EXAMPLE:     1  
+            // BALL EXAMPLE:    718 
             //                  234 
-            //                  65  
+            //                  659  
 
-            DrawPixel(pixels, ballPosition[0] - 1,  ballPosition[1],        color);  // 1
-            DrawPixel(pixels, ballPosition[0],      ballPosition[1] - 1,    color);  // 2
+            DrawPixel(pixels, ballPosition[0] - 1,  ballPosition[1],        color);  // 2
+            DrawPixel(pixels, ballPosition[0],      ballPosition[1] - 1,    color);  // 5
             DrawPixel(pixels, ballPosition[0],      ballPosition[1],        color);  // 3
-            DrawPixel(pixels, ballPosition[0],      ballPosition[1] + 1,    color);  // 4
-            DrawPixel(pixels, ballPosition[0] + 1,  ballPosition[1],        color);  // 5
+            DrawPixel(pixels, ballPosition[0],      ballPosition[1] + 1,    color);  // 1
+            DrawPixel(pixels, ballPosition[0] + 1,  ballPosition[1],        color);  // 4
             DrawPixel(pixels, ballPosition[0] - 1,  ballPosition[1] + 1,    color);  // 6
+            DrawPixel(pixels, ballPosition[0] -1,   ballPosition[1] - 1, color);  // 7
+            DrawPixel(pixels, ballPosition[0] + 1,  ballPosition[1]+1, color);  // 9
+            DrawPixel(pixels, ballPosition[0] + 1,  ballPosition[1] - 1, color);  // 8
         }
 
         private static void DrawPixel(int[,] pixels, float x, float y, int color)
@@ -258,19 +260,19 @@ namespace RetroGameDemo
                 float[] ballSpeedAbs = new float[] { Math.Abs(ballSpeed[0]), Math.Abs(ballSpeed[1]) };
                 if (KeyCode == Keys.Up || KeyCode == Keys.W)
                 {
-                    ballSpeed[1] = -ballSpeedAbs[1];
+                    ballSpeed[1]--;
                 }
                 else if (KeyCode == Keys.Down || KeyCode == Keys.S)
                 {
-                    ballSpeed[1] = ballSpeedAbs[1];
+                    ballSpeed[1]++;
                 }
                 else if (KeyCode == Keys.Right || KeyCode == Keys.D)
                 {
-                    ballSpeed[0] = ballSpeedAbs[0];
+                    ballSpeed[0]++;
                 }
                 else if (KeyCode == Keys.Left || KeyCode == Keys.A)
                 {
-                    ballSpeed[0] = -ballSpeedAbs[0];
+                    ballSpeed[0]--;
                 }
                 else if (KeyCode == Keys.P)
                 {
