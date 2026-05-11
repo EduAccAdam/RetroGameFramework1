@@ -125,7 +125,7 @@ namespace RetroGameDemo
             ballPosition = new float[] { GameConfig.PixelsMatrixWidth / 2, GameConfig.PixelsMatrixHeight / 2 };
 
             // give the fall a speed
-            ballSpeed = new float[] { 0,0 };
+            ballSpeed = new float[] { 1,1 };
 
             ballStyle.SetColorRemap(1, 2); // start from first additional color;
 
@@ -181,43 +181,40 @@ namespace RetroGameDemo
 
         private void UpdateBallPosition()
         {
-            // Update ball's position
-            ballPosition[0] += ballSpeed[0];
-            ballPosition[1] += ballSpeed[1];
-
+            
             // Check hits with screen bounds to make the ball bounce
             // The bounce is cheched with a margin to consider the ball dimension
             // In the collision checkings, the radius is always reduced by 0.5 beceuse the center pixel should not be computed.
 
             float ballRadius = 1.5f;
 
-            if (ballSpeed[0] < 0 && ballPosition[0] - (ballRadius - 0.5f) <= 0) // horizontal check to the left
+            if (ballPosition[0] < 0 && ballPosition[0] - (ballRadius - 0.5f) <= 0) // horizontal check to the left
             {
                 // if the ball is going to the left and it went outside the left screen bound,
-                ballPosition[0] += (ballRadius - 0.5f) - ballPosition[0]; // correct the position after the bounce
-                ballSpeed[0] *= -1; // flip the speed direction
+                //ballPosition[0] += (ballRadius - 0.5f) - ballPosition[0]; // correct the position after the bounce
+                //ballSpeed[0] *= -1; // flip the speed direction
                 OnEndGame();
             }
-            else if (ballSpeed[0] > 0 && ballPosition[0] + (ballRadius - 0.5) >= GameConfig.PixelsMatrixWidth - 1) // horizontal check to the right
+            else if (ballPosition[0] > 0 && ballPosition[0] + (ballRadius - 0.5) >= GameConfig.PixelsMatrixWidth - 1) // horizontal check to the right
             {
                 // if the ball is going to the right and it went outside the right screen bound,
-                ballPosition[0] -= ballPosition[0] - (GameConfig.PixelsMatrixWidth - 1 - (ballRadius - 0.5f)); // correct the position after the bounce
-                ballSpeed[0] *= -1; // flip the speed direction
+                //ballPosition[0] -= ballPosition[0] - (GameConfig.PixelsMatrixWidth - 1 - (ballRadius - 0.5f)); // correct the position after the bounce
+                //ballSpeed[0] *= -1; // flip the speed direction
                 OnEndGame();
             }
 
-            if (ballSpeed[1] < 0 && ballPosition[1] - (ballRadius - 0.5f) <= 0) // vertical check to the top
+            if (ballPosition[1] < 0 && ballPosition[1] - (ballRadius - 0.5f) <= 0) // vertical check to the top
             {
                 // if the ball is going up and it went outside the top screen bound,
-                ballPosition[1] += (ballRadius - 0.5f) - ballPosition[1]; // correct the position after the bounce
-                ballSpeed[1] *= -1; // flip the speed direction
+                //ballPosition[1] += (ballRadius - 0.5f) - ballPosition[1]; // correct the position after the bounce
+                //ballSpeed[1] *= -1; // flip the speed direction
                 OnEndGame();
             }
-            else if (ballSpeed[1] > 0 && ballPosition[1] + (ballRadius - 0.5f) >= GameConfig.PixelsMatrixHeight - 1) // vertical check to the bottom
+            else if (ballPosition[1] > 0 && ballPosition[1] + (ballRadius - 0.5f) >= GameConfig.PixelsMatrixHeight - 1) // vertical check to the bottom
             {
                 // if the ball is going down and it went outside the bottom screen bound,
-                ballPosition[1] -= ballPosition[1] - (GameConfig.PixelsMatrixHeight - 1 - (ballRadius - 0.5f)); // correct the position after the bounce
-                ballSpeed[1] *= -1; // flip the speed direction
+                //ballPosition[1] -= ballPosition[1] - (GameConfig.PixelsMatrixHeight - 1 - (ballRadius - 0.5f)); // correct the position after the bounce
+                //ballSpeed[1] *= -1; // flip the speed direction
                 OnEndGame();
             }
         }
@@ -260,19 +257,19 @@ namespace RetroGameDemo
                 float[] ballSpeedAbs = new float[] { Math.Abs(ballSpeed[0]), Math.Abs(ballSpeed[1]) };
                 if (KeyCode == Keys.Up || KeyCode == Keys.W)
                 {
-                    ballSpeed[1]--;
+                    ballPosition[1]--;
                 }
                 else if (KeyCode == Keys.Down || KeyCode == Keys.S)
                 {
-                    ballSpeed[1]++;
+                    ballPosition[1]++;
                 }
                 else if (KeyCode == Keys.Right || KeyCode == Keys.D)
                 {
-                    ballSpeed[0]++;
+                    ballPosition[0]++;
                 }
                 else if (KeyCode == Keys.Left || KeyCode == Keys.A)
                 {
-                    ballSpeed[0]--;
+                    ballPosition[0]--;
                 }
                 else if (KeyCode == Keys.P)
                 {
@@ -290,6 +287,7 @@ namespace RetroGameDemo
                     if (ballColor >= GameConfig.AdditionalColors.Length + 2)
                         ballColor = 2;
                 }
+                
             }
             else
             {
@@ -303,13 +301,29 @@ namespace RetroGameDemo
         // Called if a key has been released (even in the same frame it has been released)
         protected override void OnKeyUp(Keys KeyCode)
         {
-        
+            ballPosition[0] = ballPosition[0];
+            ballPosition[1] = ballPosition[1];
         }
 
         // Called during the frame a key is pressed and in all the following frames until it's released (excluding the frame it's released)
         protected override void OnKeyPress(Keys KeyCode)
         {
-        
+            if (KeyCode == Keys.Up || KeyCode == Keys.W)
+            {
+                ballPosition[1]--;
+            }
+            else if (KeyCode == Keys.Down || KeyCode == Keys.S)
+            {
+                ballPosition[1]++;
+            }
+            else if (KeyCode == Keys.Right || KeyCode == Keys.D)
+            {
+                ballPosition[0]++;
+            }
+            else if (KeyCode == Keys.Left || KeyCode == Keys.A)
+            {
+                ballPosition[0]--;
+            }
         }
 
     }
