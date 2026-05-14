@@ -19,11 +19,12 @@
 
 */
 
-using System;
-using System.Windows.Forms;
-using System.Drawing;
 using RetroGameFramework;
+using System;
+using System.Drawing;
 using System.Threading;
+using System.Windows.Forms;
+using System.Windows.Media;
 
 namespace RetroGameDemo
 {
@@ -98,9 +99,9 @@ namespace RetroGameDemo
 
             GameConfig.PixelsMatrixWidth = 64;
             GameConfig.PixelsMatrixHeight = 48;
-            GameConfig.PixelSize = 10;
+            GameConfig.PixelSize = 15;
 
-            GameConfig.FrameRate = 10;
+            GameConfig.FrameRate = 15;
 
             GameConfig.BackgroundColor = System.Drawing.Color.DarkGreen;
             //GameForm.Initializer.ForegroundColor = System.Drawing.Color.White;
@@ -125,7 +126,7 @@ namespace RetroGameDemo
             ballPosition = new float[] { GameConfig.PixelsMatrixWidth / 2, GameConfig.PixelsMatrixHeight / 2 };
 
             // give the fall a speed
-            ballSpeed = new float[] { 1,1 };
+            ballSpeed = new float[] { 0,0 };
 
             ballStyle.SetColorRemap(1, 2); // start from first additional color;
 
@@ -157,6 +158,7 @@ namespace RetroGameDemo
             {
                 UpdateBallPosition();
             }
+
         }
 
         // Called once per frame, AFTER the OnLoopGame event.
@@ -181,7 +183,8 @@ namespace RetroGameDemo
 
         private void UpdateBallPosition()
         {
-            
+            ballPosition[0] += ballSpeed[0];
+            ballPosition[1] += ballSpeed[1];
             // Check hits with screen bounds to make the ball bounce
             // The bounce is cheched with a margin to consider the ball dimension
             // In the collision checkings, the radius is always reduced by 0.5 beceuse the center pixel should not be computed.
@@ -224,6 +227,9 @@ namespace RetroGameDemo
             // BALL EXAMPLE:    718 
             //                  234 
             //                  659  
+            //                  
+            //                  
+            //
 
             DrawPixel(pixels, ballPosition[0] - 1,  ballPosition[1],        color);  // 2
             DrawPixel(pixels, ballPosition[0],      ballPosition[1] - 1,    color);  // 5
@@ -234,6 +240,7 @@ namespace RetroGameDemo
             DrawPixel(pixels, ballPosition[0] -1,   ballPosition[1] - 1, color);  // 7
             DrawPixel(pixels, ballPosition[0] + 1,  ballPosition[1]+1, color);  // 9
             DrawPixel(pixels, ballPosition[0] + 1,  ballPosition[1] - 1, color);  // 8
+
         }
 
         private static void DrawPixel(int[,] pixels, float x, float y, int color)
@@ -247,6 +254,7 @@ namespace RetroGameDemo
                 // X coordinate is the column index, while Y coordinate is the row index
                 pixels[posX, posY] = color;
             }
+            
         }
 
         // Called the first frame a key is pressed, and not called anymore unless the key is released
@@ -255,27 +263,29 @@ namespace RetroGameDemo
             if (!IsPaused())
             {
                 float[] ballSpeedAbs = new float[] { Math.Abs(ballSpeed[0]), Math.Abs(ballSpeed[1]) };
+
                 if (KeyCode == Keys.Up || KeyCode == Keys.W)
                 {
-                    ballPosition[1]--;
+                    ballSpeed = new float[] { 0, -1 };
+
                 }
                 else if (KeyCode == Keys.Down || KeyCode == Keys.S)
                 {
-                    ballPosition[1]++;
+                    ballSpeed = new float[] { 0, 1 };
                 }
                 else if (KeyCode == Keys.Right || KeyCode == Keys.D)
                 {
-                    ballPosition[0]++;
+                    ballSpeed = new float[] { 1, 0 };
                 }
                 else if (KeyCode == Keys.Left || KeyCode == Keys.A)
                 {
-                    ballPosition[0]--;
+                    ballSpeed = new float[] { -1, 0 };
                 }
-                else if (KeyCode == Keys.P)
+                if (KeyCode == Keys.P)
                 {
                     SetPaused(true);
                 }
-                else if (KeyCode == Keys.C)
+                if (KeyCode == Keys.C)
                 {
                     int tmpColor = ballStyle.GetRemappedColor(PaintStyle.FOREGROUND_COLOR_INDEX);
                     tmpColor++;
@@ -301,29 +311,15 @@ namespace RetroGameDemo
         // Called if a key has been released (even in the same frame it has been released)
         protected override void OnKeyUp(Keys KeyCode)
         {
-            ballPosition[0] = ballPosition[0];
-            ballPosition[1] = ballPosition[1];
+
         }
 
         // Called during the frame a key is pressed and in all the following frames until it's released (excluding the frame it's released)
         protected override void OnKeyPress(Keys KeyCode)
         {
-            if (KeyCode == Keys.Up || KeyCode == Keys.W)
-            {
-                ballPosition[1]--;
-            }
-            else if (KeyCode == Keys.Down || KeyCode == Keys.S)
-            {
-                ballPosition[1]++;
-            }
-            else if (KeyCode == Keys.Right || KeyCode == Keys.D)
-            {
-                ballPosition[0]++;
-            }
-            else if (KeyCode == Keys.Left || KeyCode == Keys.A)
-            {
-                ballPosition[0]--;
-            }
+            
+            
+            
         }
 
     }
