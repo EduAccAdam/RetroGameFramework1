@@ -101,20 +101,21 @@ namespace RetroGameDemo
             GameConfig.PixelsMatrixHeight = 48;
             GameConfig.PixelSize = 15;
 
-            GameConfig.FrameRate = 15;
+            GameConfig.FrameRate = 20;
 
-            GameConfig.BackgroundColor = System.Drawing.Color.DarkGreen;
+            GameConfig.BackgroundColor = System.Drawing.Color.FromArgb(34,139,34);
             //GameForm.Initializer.ForegroundColor = System.Drawing.Color.White;
-            GameConfig.ForegroundColor = System.Drawing.Color.FromArgb(144, 238, 144);
+            GameConfig.ForegroundColor = System.Drawing.Color.Cyan;
 
             GameConfig.AdditionalColors = new System.Drawing.Color[] {
                 System.Drawing.Color.Red,
                 System.Drawing.Color.Orange,
                 System.Drawing.Color.Yellow,
-                //System.Drawing.Color.Green,
+                System.Drawing.Color.Purple,
                 System.Drawing.Color.Cyan,
                 System.Drawing.Color.Blue,
                 System.Drawing.Color.Violet,
+
            };
         }
 
@@ -176,8 +177,7 @@ namespace RetroGameDemo
         // Its main purpose it's to dispose resources, as the game will end immediately after this call.
         protected override void OnEndGame()
         {
-            Console.WriteLine("Fine");
-            Thread.Sleep(1000);
+            //Thread.Sleep(2000);
             Environment.Exit(0);
         }
 
@@ -191,14 +191,14 @@ namespace RetroGameDemo
 
             float ballRadius = 1.5f;
 
-            if (ballPosition[0] < 0 && ballPosition[0] - (ballRadius - 0.5f) <= 0) // horizontal check to the left
+            if (ballPosition[0] - (ballRadius - 0.5f) <= 0 && ballPosition[0] < 0 ) // horizontal check to the left
             {
                 // if the ball is going to the left and it went outside the left screen bound,
                 //ballPosition[0] += (ballRadius - 0.5f) - ballPosition[0]; // correct the position after the bounce
                 //ballSpeed[0] *= -1; // flip the speed direction
                 OnEndGame();
             }
-            else if (ballPosition[0] > 0 && ballPosition[0] + (ballRadius - 0.5) >= GameConfig.PixelsMatrixWidth - 1) // horizontal check to the right
+            else if (ballPosition[0] + (ballRadius - 0.5) >= GameConfig.PixelsMatrixWidth+0.2 && ballPosition[0] > 0) // horizontal check to the right
             {
                 // if the ball is going to the right and it went outside the right screen bound,
                 //ballPosition[0] -= ballPosition[0] - (GameConfig.PixelsMatrixWidth - 1 - (ballRadius - 0.5f)); // correct the position after the bounce
@@ -206,14 +206,14 @@ namespace RetroGameDemo
                 OnEndGame();
             }
 
-            if (ballPosition[1] < 0 && ballPosition[1] - (ballRadius - 0.5f) <= 0) // vertical check to the top
+            if (ballPosition[1] - (ballRadius - 0.5f) <= 0 && ballPosition[1] < 0) // vertical check to the top
             {
                 // if the ball is going up and it went outside the top screen bound,
                 //ballPosition[1] += (ballRadius - 0.5f) - ballPosition[1]; // correct the position after the bounce
                 //ballSpeed[1] *= -1; // flip the speed direction
                 OnEndGame();
             }
-            else if (ballPosition[1] > 0 && ballPosition[1] + (ballRadius - 0.5f) >= GameConfig.PixelsMatrixHeight - 1) // vertical check to the bottom
+            else if (ballPosition[1] + (ballRadius - 0.5f) >= GameConfig.PixelsMatrixHeight - 1 && ballPosition[1] > 0 ) // vertical check to the bottom
             {
                 // if the ball is going down and it went outside the bottom screen bound,
                 //ballPosition[1] -= ballPosition[1] - (GameConfig.PixelsMatrixHeight - 1 - (ballRadius - 0.5f)); // correct the position after the bounce
@@ -232,9 +232,9 @@ namespace RetroGameDemo
             //
 
             DrawPixel(pixels, ballPosition[0] - 1,  ballPosition[1],        color);  // 2
-            DrawPixel(pixels, ballPosition[0],      ballPosition[1] - 1,    color);  // 5
+            DrawPixel(pixels, ballPosition[0],      ballPosition[1] - 1,    color);  // 1
             DrawPixel(pixels, ballPosition[0],      ballPosition[1],        color);  // 3
-            DrawPixel(pixels, ballPosition[0],      ballPosition[1] + 1,    color);  // 1
+            DrawPixel(pixels, ballPosition[0],      ballPosition[1] + 1,    color);  // 5
             DrawPixel(pixels, ballPosition[0] + 1,  ballPosition[1],        color);  // 4
             DrawPixel(pixels, ballPosition[0] - 1,  ballPosition[1] + 1,    color);  // 6
             DrawPixel(pixels, ballPosition[0] -1,   ballPosition[1] - 1, color);  // 7
@@ -296,15 +296,18 @@ namespace RetroGameDemo
                     ballColor++;
                     if (ballColor >= GameConfig.AdditionalColors.Length + 2)
                         ballColor = 2;
-                }
-                
+                }  
             }
             else
             {
                 if (KeyCode == Keys.P)
                 {
                     SetPaused(false);
+                    ballPosition[0] = GameConfig.PixelsMatrixWidth / 2;
+                    ballPosition[1] = GameConfig.PixelsMatrixHeight / 2;
+                    ballSpeed = new float[] { 0, 0 };
                 }
+
             }
         }
 
