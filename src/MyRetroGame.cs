@@ -40,8 +40,9 @@ namespace RetroGameDemo
         // Declare here game-specific data that should survive the frame
         float[] ballPosition; // ball position in screen pixels (float to consider also half pixels)
         float[] ballSpeed; // ball speed in pixels per frame (float to consider also half pixels)
-        
-        float[] melaPosition;
+
+
+        float[] melaPosition = new float[] { ,};
 
         int ballColor = 1;
 
@@ -161,7 +162,7 @@ namespace RetroGameDemo
             hearthStyle.SetColorRemap(1, 2);
             hearthStyle.SetColorRemap(2, 8);
 
-            MelaStyle.EnsureColorRemapSize(3);
+            MelaStyle.EnsureColorRemapSize(1);
 
             MelaStyle.SetColorRemap(1,2);
         }
@@ -196,7 +197,8 @@ namespace RetroGameDemo
 
             // set the foregorund color in the current ball location
             //GameUtils.DrawImageOnScreen(pixels, ballImage, new Point((int)ballPosition[0], (int)ballPosition[1]), ballStyle);
-            GameUtils.DrawImageOnScreen(pixels, Mela, new Point(10, 10), MelaStyle);
+            GameUtils.DrawImageOnScreen(pixels, Mela, new Point((int)melaPosition[0], (int)melaPosition[1]), MelaStyle);
+            DrawBall(pixels, ballColor);
             DrawBall(pixels, ballColor);
         }
 
@@ -216,9 +218,7 @@ namespace RetroGameDemo
             // The bounce is cheched with a margin to consider the ball dimension
             // In the collision checkings, the radius is always reduced by 0.5 beceuse the center pixel should not be computed.
 
-            float ballRadius = 0f;
-
-            if (ballPosition[0] == 0  ) // horizontal check to the left
+            if (ballPosition[0] == 0) // horizontal check to the left
             {
                 // if the ball is going to the left and it went outside the left screen bound,
                 //ballPosition[0] += (ballRadius - 0.5f) - ballPosition[0]; // correct the position after the bounce
@@ -235,7 +235,7 @@ namespace RetroGameDemo
                 OnEndGame();
             }
 
-            if (ballPosition[1] == 0 ) // vertical check to the top
+            if (ballPosition[1] == 0) // vertical check to the top
             {
                 // if the ball is going up and it went outside the top screen bound,
                 //ballPosition[1] += (ballRadius - 0.5f) - ballPosition[1]; // correct the position after the bounce
@@ -243,7 +243,7 @@ namespace RetroGameDemo
                 IsPaused();
                 OnEndGame();
             }
-            else if (ballPosition[1] == 47 ) // vertical check to the bottom
+            else if (ballPosition[1] == 47) // vertical check to the bottom
             {
                 // if the ball is going down and it went outside the bottom screen bound,
                 //ballPosition[1] -= ballPosition[1] - (GameConfig.PixelsMatrixHeight - 1 - (ballRadius - 0.5f)); // correct the position after the bounce
@@ -258,19 +258,37 @@ namespace RetroGameDemo
             // BALL EXAMPLE:    718 
             //                  234 
             //                  659  
-            //                  
-            //                  
-            //
+            
+            //                  abc
+            //                  def
+            //                  ghj
 
-            DrawPixel(pixels, ballPosition[0] - 1,  ballPosition[1],        color);  // 2
-            DrawPixel(pixels, ballPosition[0],      ballPosition[1] - 1,    color);  // 1
-            DrawPixel(pixels, ballPosition[0],      ballPosition[1],        color);  // 3
-            DrawPixel(pixels, ballPosition[0],      ballPosition[1] + 1,    color);  // 5
-            DrawPixel(pixels, ballPosition[0] + 1,  ballPosition[1],        color);  // 4
-            DrawPixel(pixels, ballPosition[0] - 1,  ballPosition[1] + 1,    color);  // 6
-            DrawPixel(pixels, ballPosition[0] -1,   ballPosition[1] - 1, color);  // 7
-            DrawPixel(pixels, ballPosition[0] + 1,  ballPosition[1]+1, color);  // 9
-            DrawPixel(pixels, ballPosition[0] + 1,  ballPosition[1] - 1, color);  // 8
+            //int contatore = 0;
+            //if (contatore == 0)
+            //{
+                DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1], color);  // 2
+                DrawPixel(pixels, ballPosition[0], ballPosition[1] - 1, color);  // 1
+                DrawPixel(pixels, ballPosition[0], ballPosition[1], color);  // 3
+                DrawPixel(pixels, ballPosition[0], ballPosition[1] + 1, color);  // 5
+                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1], color);  // 4
+                DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1] + 1, color);  // 6
+                DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1] - 1, color);  // 7
+                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] + 1, color);  // 9
+                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] - 1, color);  // 8
+                //contatore++;
+            //}
+            /*else if (contatore == 1)
+            {
+                DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1] + 3, color);  // d
+                DrawPixel(pixels, ballPosition[0], ballPosition[1] + 2, color);  // b
+                DrawPixel(pixels, ballPosition[0], ballPosition[1] + 3, color);  // e
+                DrawPixel(pixels, ballPosition[0], ballPosition[1] + 4, color);  // h
+                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] + 3, color);  // f
+                DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1] + 4, color);  // g
+                DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1] + 2, color);  // a
+                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] + 4, color);  // j
+                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] + 2, color);  // c
+            }*/          
 
         }
 
