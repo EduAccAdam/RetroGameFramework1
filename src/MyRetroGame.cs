@@ -40,16 +40,17 @@ namespace RetroGameDemo
         // Declare here game-specific data that should survive the frame
         float[] ballPosition; // ball position in screen pixels (float to consider also half pixels)
         float[] ballSpeed; // ball speed in pixels per frame (float to consider also half pixels)
+        
+        float[] melaPosition;
 
         int ballColor = 1;
 
 
         GameImage Mela = new GameImage(new int[,]
         {
-            {0,0,1,0,0},
-            {1,0,1,0,1},
-            {1,1,1,1,1},
-            {0,1,1,1,0}
+            {1,1,1},
+            {1,1,1},
+            {1,1,1}
         }, AnchorType.Center);
 
         PaintStyle MelaStyle = PaintStyle.Default;
@@ -148,6 +149,7 @@ namespace RetroGameDemo
             // give the fall a speed
             ballSpeed = new float[] { 0,0 };
 
+
             ballStyle.SetColorRemap(1, 2); // start from first additional color;
 
             squareStyle1.EnsureColorRemapSize(4);
@@ -158,6 +160,10 @@ namespace RetroGameDemo
 
             hearthStyle.SetColorRemap(1, 2);
             hearthStyle.SetColorRemap(2, 8);
+
+            MelaStyle.EnsureColorRemapSize(3);
+
+            MelaStyle.SetColorRemap(1,2);
         }
 
         // Called once per frame, BEFORE the OnLoopGame event.
@@ -190,7 +196,7 @@ namespace RetroGameDemo
 
             // set the foregorund color in the current ball location
             //GameUtils.DrawImageOnScreen(pixels, ballImage, new Point((int)ballPosition[0], (int)ballPosition[1]), ballStyle);
-            GameUtils.DrawImageOnScreen(pixels, Mela, new Point((int) ballPosition[0], (int)ballPosition[1]), MelaStyle);
+            GameUtils.DrawImageOnScreen(pixels, Mela, new Point(10, 10), MelaStyle);
             DrawBall(pixels, ballColor);
         }
 
@@ -198,7 +204,7 @@ namespace RetroGameDemo
         // Its main purpose it's to dispose resources, as the game will end immediately after this call.
         protected override void OnEndGame()
         {
-            Thread.Sleep(3000);
+            Thread.Sleep(2000);
             Environment.Exit(0);
         }
 
@@ -210,9 +216,9 @@ namespace RetroGameDemo
             // The bounce is cheched with a margin to consider the ball dimension
             // In the collision checkings, the radius is always reduced by 0.5 beceuse the center pixel should not be computed.
 
-            float ballRadius = 1.5f;
+            float ballRadius = 0f;
 
-            if (ballPosition[0] - (ballRadius - 0) <= 0 && ballPosition[0] < 0 ) // horizontal check to the left
+            if (ballPosition[0] == 0  ) // horizontal check to the left
             {
                 // if the ball is going to the left and it went outside the left screen bound,
                 //ballPosition[0] += (ballRadius - 0.5f) - ballPosition[0]; // correct the position after the bounce
@@ -220,7 +226,7 @@ namespace RetroGameDemo
                 IsPaused();
                 OnEndGame();
             }
-            else if (ballPosition[0] + (ballRadius + 0.5f) >= GameConfig.PixelsMatrixWidth+0.2 && ballPosition[0] > 0) // horizontal check to the right
+            else if (ballPosition[0] == 63) // horizontal check to the right
             {
                 // if the ball is going to the right and it went outside the right screen bound,
                 //ballPosition[0] -= ballPosition[0] - (GameConfig.PixelsMatrixWidth - 1 - (ballRadius - 0.5f)); // correct the position after the bounce
@@ -229,7 +235,7 @@ namespace RetroGameDemo
                 OnEndGame();
             }
 
-            if (ballPosition[1] - (ballRadius - 1.8f) <= 0 && ballPosition[1] < 0) // vertical check to the top
+            if (ballPosition[1] == 0 ) // vertical check to the top
             {
                 // if the ball is going up and it went outside the top screen bound,
                 //ballPosition[1] += (ballRadius - 0.5f) - ballPosition[1]; // correct the position after the bounce
@@ -237,7 +243,7 @@ namespace RetroGameDemo
                 IsPaused();
                 OnEndGame();
             }
-            else if (ballPosition[1] + (ballRadius - 0f) >= GameConfig.PixelsMatrixHeight - 1 && ballPosition[1] > 0 ) // vertical check to the bottom
+            else if (ballPosition[1] == 47 ) // vertical check to the bottom
             {
                 // if the ball is going down and it went outside the bottom screen bound,
                 //ballPosition[1] -= ballPosition[1] - (GameConfig.PixelsMatrixHeight - 1 - (ballRadius - 0.5f)); // correct the position after the bounce
