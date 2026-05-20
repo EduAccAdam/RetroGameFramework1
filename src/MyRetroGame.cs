@@ -44,13 +44,15 @@ namespace RetroGameDemo
         int ballColor = 1;
 
 
-        GameImage appleImage = new GameImage(new int[,]
+        GameImage Mela = new GameImage(new int[,]
         {
             {0,0,1,0,0},
             {1,0,1,0,1},
             {1,1,1,1,1},
             {0,1,1,1,0}
         }, AnchorType.Center);
+
+        PaintStyle MelaStyle = PaintStyle.Default;
         
         //
         //
@@ -184,10 +186,12 @@ namespace RetroGameDemo
         {
             int screenWidth = pixels.GetLength(0);
             int screenHeight = pixels.GetLength(1);
-            
 
-            DrawBall(pixels, ballColor); // set the foregorund color in the current ball location
+
+            // set the foregorund color in the current ball location
             //GameUtils.DrawImageOnScreen(pixels, ballImage, new Point((int)ballPosition[0], (int)ballPosition[1]), ballStyle);
+            GameUtils.DrawImageOnScreen(pixels, Mela, new Point((int) ballPosition[0], (int)ballPosition[1]), MelaStyle);
+            DrawBall(pixels, ballColor);
         }
 
         // Called at the end of the last frame of the game.
