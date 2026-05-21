@@ -30,6 +30,8 @@ namespace RetroGameDemo
 {
     internal class MyRetroGame : GameLogic
     {
+        private int melaX = -1;
+        private int melaY = -1; 
         public MyRetroGame(GameConfig GameConfig) : base(GameConfig) { }
 
         // GameConfig is a variable already accessible in methods to retrieve the game configs
@@ -41,14 +43,17 @@ namespace RetroGameDemo
         float[] ballPosition; // ball position in screen pixels (float to consider also half pixels)
         float[] ballSpeed; // ball speed in pixels per frame (float to consider also half pixels)
 
+        Random random = new Random();
 
+        int meleContatore = 0;
+        int meleMangiate = 0;
 
-        float[] melaPosition = new float[] { 10,10};
+        float[] melaPosition;
 
         int ballColor = 1;
 
 
-        GameImage Mela = new GameImage(new int[,]
+        GameImage melaImage = new GameImage(new int[,]
         {
             {1,1,1},
             {1,1,1},
@@ -107,9 +112,6 @@ namespace RetroGameDemo
         new char[] { ' ', '*', '$', '.' }, AnchorType.Center);
         PaintStyle squareStyle2 = PaintStyle.Default;
 
-        GameImage appleImage = GameImage.CreateFromResource("apple",AnchorType.Center);
-        PaintStyle appleStyle = PaintStyle.Default;
-
         GameImage hearthImage = GameImage.CreateFromResource("hearth", AnchorType.Center);
         PaintStyle hearthStyle = PaintStyle.Default;
         //
@@ -142,6 +144,9 @@ namespace RetroGameDemo
                 System.Drawing.Color.Violet,
 
            };
+
+            int melaX = random.Next(1, 60);
+            int melaY = random.Next(1, 40);
         }
 
         // Called at the start of the first frame of the game.
@@ -154,7 +159,6 @@ namespace RetroGameDemo
             // give the fall a speed
             ballSpeed = new float[] { 0,0 };
 
-
             ballStyle.SetColorRemap(1, 2); // start from first additional color;
 
             squareStyle1.EnsureColorRemapSize(4);
@@ -166,12 +170,10 @@ namespace RetroGameDemo
             hearthStyle.SetColorRemap(1, 2);
             hearthStyle.SetColorRemap(2, 8);
 
-            appleStyle.SetColorRemap(1, 2);
-            appleStyle.SetColorRemap(2, 8);
-
             MelaStyle.EnsureColorRemapSize(1);
 
             MelaStyle.SetColorRemap(1,2);
+
         }
 
         // Called once per frame, BEFORE the OnLoopGame event.
@@ -201,13 +203,19 @@ namespace RetroGameDemo
             int screenWidth = pixels.GetLength(0);
             int screenHeight = pixels.GetLength(1);
 
+            Console.WriteLine(meleContatore);
+
+            melaPosition = new float[] {melaX,melaY};
 
             // set the foregorund color in the current ball location
             //GameUtils.DrawImageOnScreen(pixels, ballImage, new Point((int)ballPosition[0], (int)ballPosition[1]), ballStyle);
-            GameUtils.DrawImageOnScreen(pixels, Mela, new Point((int)melaPosition[0], (int)melaPosition[1]), MelaStyle);
-            GameUtils.DrawImageOnScreen(pixels, appleImage, new Point(20, 20), appleStyle);
+            
+
+            GameUtils.DrawImageOnScreen(pixels, melaImage, new Point((int)melaPosition[0], (int)melaPosition[1]), MelaStyle);
+
+
             DrawBall(pixels, ballColor);
-            DrawBall(pixels, ballColor);
+
         }
 
         // Called at the end of the last frame of the game.
@@ -215,13 +223,22 @@ namespace RetroGameDemo
         protected override void OnEndGame()
         {
             //Thread.Sleep(750);
+            Console.WriteLine(meleMangiate);
             Environment.Exit(0);
         }
 
         private void UpdateBallPosition()
         {
+            if (meleContatore == 0 && melaX < 0 && melaY < 0)
+            {
+                melaX = random.Next(1, 60);
+                melaY = random.Next(1, 40);
+                meleContatore++;
+            }
+
             ballPosition[0] += ballSpeed[0];
             ballPosition[1] += ballSpeed[1];
+
             // Check hits with screen bounds to make the ball bounce
             // The bounce is cheched with a margin to consider the ball dimension
             // In the collision checkings, the radius is always reduced by 0.5 beceuse the center pixel should not be computed.
@@ -259,6 +276,19 @@ namespace RetroGameDemo
                 //IsPaused();
                 OnEndGame();
             }
+            if ((ballPosition[0] >= melaPosition[0] - 3 &&
+                 ballPosition[0] <= melaPosition[0] + 3 &&
+                 ballPosition[1] >= melaPosition[1] - 3 &&
+                 ballPosition[1] <= melaPosition[1] + 3))
+            {
+                meleMangiate++;
+                meleContatore--;
+                melaX = random.Next(1, 60);
+                melaY = random.Next(1, 40);
+                meleContatore++;
+            }
+
+
         }
 
         private void DrawBall(int[,] pixels, int color)
@@ -359,9 +389,6 @@ namespace RetroGameDemo
                 if (KeyCode == Keys.P)
                 {
                     SetPaused(false);
-                    ballPosition[0] = GameConfig.PixelsMatrixWidth / 2;
-                    ballPosition[1] = GameConfig.PixelsMatrixHeight / 2;
-                    ballSpeed = new float[] { 0, 0 };
                 }
 
             }
