@@ -42,7 +42,8 @@ namespace RetroGameDemo
         float[] ballSpeed; // ball speed in pixels per frame (float to consider also half pixels)
 
 
-        float[] melaPosition = new float[] { ,};
+
+        float[] melaPosition = new float[] { 10,10};
 
         int ballColor = 1;
 
@@ -106,6 +107,9 @@ namespace RetroGameDemo
         new char[] { ' ', '*', '$', '.' }, AnchorType.Center);
         PaintStyle squareStyle2 = PaintStyle.Default;
 
+        GameImage appleImage = GameImage.CreateFromResource("apple",AnchorType.Center);
+        PaintStyle appleStyle = PaintStyle.Default;
+
         GameImage hearthImage = GameImage.CreateFromResource("hearth", AnchorType.Center);
         PaintStyle hearthStyle = PaintStyle.Default;
         //
@@ -162,6 +166,9 @@ namespace RetroGameDemo
             hearthStyle.SetColorRemap(1, 2);
             hearthStyle.SetColorRemap(2, 8);
 
+            appleStyle.SetColorRemap(1, 2);
+            appleStyle.SetColorRemap(2, 8);
+
             MelaStyle.EnsureColorRemapSize(1);
 
             MelaStyle.SetColorRemap(1,2);
@@ -198,6 +205,7 @@ namespace RetroGameDemo
             // set the foregorund color in the current ball location
             //GameUtils.DrawImageOnScreen(pixels, ballImage, new Point((int)ballPosition[0], (int)ballPosition[1]), ballStyle);
             GameUtils.DrawImageOnScreen(pixels, Mela, new Point((int)melaPosition[0], (int)melaPosition[1]), MelaStyle);
+            GameUtils.DrawImageOnScreen(pixels, appleImage, new Point(20, 20), appleStyle);
             DrawBall(pixels, ballColor);
             DrawBall(pixels, ballColor);
         }
@@ -206,7 +214,7 @@ namespace RetroGameDemo
         // Its main purpose it's to dispose resources, as the game will end immediately after this call.
         protected override void OnEndGame()
         {
-            Thread.Sleep(2000);
+            //Thread.Sleep(750);
             Environment.Exit(0);
         }
 
@@ -223,7 +231,7 @@ namespace RetroGameDemo
                 // if the ball is going to the left and it went outside the left screen bound,
                 //ballPosition[0] += (ballRadius - 0.5f) - ballPosition[0]; // correct the position after the bounce
                 //ballSpeed[0] *= -1; // flip the speed direction
-                IsPaused();
+                //IsPaused();
                 OnEndGame();
             }
             else if (ballPosition[0] == 63) // horizontal check to the right
@@ -231,7 +239,7 @@ namespace RetroGameDemo
                 // if the ball is going to the right and it went outside the right screen bound,
                 //ballPosition[0] -= ballPosition[0] - (GameConfig.PixelsMatrixWidth - 1 - (ballRadius - 0.5f)); // correct the position after the bounce
                 //ballSpeed[0] *= -1; // flip the speed direction
-                IsPaused();
+                //IsPaused();
                 OnEndGame();
             }
 
@@ -240,7 +248,7 @@ namespace RetroGameDemo
                 // if the ball is going up and it went outside the top screen bound,
                 //ballPosition[1] += (ballRadius - 0.5f) - ballPosition[1]; // correct the position after the bounce
                 //ballSpeed[1] *= -1; // flip the speed direction
-                IsPaused();
+                //IsPaused();
                 OnEndGame();
             }
             else if (ballPosition[1] == 47) // vertical check to the bottom
@@ -248,7 +256,7 @@ namespace RetroGameDemo
                 // if the ball is going down and it went outside the bottom screen bound,
                 //ballPosition[1] -= ballPosition[1] - (GameConfig.PixelsMatrixHeight - 1 - (ballRadius - 0.5f)); // correct the position after the bounce
                 //ballSpeed[1] *= -1; // flip the speed direction
-                IsPaused();
+                //IsPaused();
                 OnEndGame();
             }
         }
