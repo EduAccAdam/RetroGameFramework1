@@ -30,8 +30,7 @@ namespace RetroGameDemo
 {
     internal class MyRetroGame : GameLogic
     {
-        private int melaX = -1;
-        private int melaY = -1; 
+
         public MyRetroGame(GameConfig GameConfig) : base(GameConfig) { }
 
         // GameConfig is a variable already accessible in methods to retrieve the game configs
@@ -43,7 +42,7 @@ namespace RetroGameDemo
         float[] ballPosition; // ball position in screen pixels (float to consider also half pixels)
         float[] ballSpeed; // ball speed in pixels per frame (float to consider also half pixels)
 
-        Random random = new Random();
+        Random random = new Random(Seed:100);
 
         int meleContatore = 0;
         int meleMangiate = 0;
@@ -52,6 +51,8 @@ namespace RetroGameDemo
 
         int ballColor = 1;
 
+        int melaX = -1;
+        int melaY = -1;
 
         GameImage melaImage = new GameImage(new int[,]
         {
@@ -122,15 +123,14 @@ namespace RetroGameDemo
         {
             GameConfig.Title = "Adam_Snake";
 
-            GameConfig.PixelsMatrixWidth = 64;
+            GameConfig.PixelsMatrixWidth = 70;
             GameConfig.PixelsMatrixHeight = 48;
             GameConfig.PixelSize = 15;
 
             GameConfig.FrameRate = 20;
 
+            GameConfig.BackgroundColor = System.Drawing.Color.FromArgb(255, 34, 139, 34);
             
-
-            GameConfig.BackgroundColor = System.Drawing.Color.FromArgb(34,139,34);
             //GameForm.Initializer.ForegroundColor = System.Drawing.Color.White;
             GameConfig.ForegroundColor = System.Drawing.Color.Cyan;
 
@@ -222,18 +222,29 @@ namespace RetroGameDemo
         // Its main purpose it's to dispose resources, as the game will end immediately after this call.
         protected override void OnEndGame()
         {
-            //Thread.Sleep(750);
-            Console.WriteLine(meleMangiate);
-            Environment.Exit(0);
+            //Thread.Sleep(2000);
+            SetPaused(true);
+            //Console.WriteLine(meleMangiate);
+            //Environment.Exit(0);
         }
 
         private void UpdateBallPosition()
         {
+
             if (meleContatore == 0 && melaX < 0 && melaY < 0)
             {
-                melaX = random.Next(1, 60);
-                melaY = random.Next(1, 40);
+                melaX = random.Next(1, 70);
+                if (ballPosition[0] - melaX < 8)
+                {
+                    melaX = random.Next(1, 70);
+                }
+                melaY = random.Next(1, 48);
+                if (ballPosition[1] - melaY < 8)
+                {
+                    melaY = random.Next(1, 48);
+                }
                 meleContatore++;
+
             }
 
             ballPosition[0] += ballSpeed[0];
@@ -243,37 +254,33 @@ namespace RetroGameDemo
             // The bounce is cheched with a margin to consider the ball dimension
             // In the collision checkings, the radius is always reduced by 0.5 beceuse the center pixel should not be computed.
 
-            if (ballPosition[0] == 0) // horizontal check to the left
+            if (ballPosition[0] == 1) // horizontal check to the left
             {
                 // if the ball is going to the left and it went outside the left screen bound,
                 //ballPosition[0] += (ballRadius - 0.5f) - ballPosition[0]; // correct the position after the bounce
                 //ballSpeed[0] *= -1; // flip the speed direction
-                //IsPaused();
                 OnEndGame();
             }
-            else if (ballPosition[0] == 63) // horizontal check to the right
+            else if (ballPosition[0] == GameConfig.PixelsMatrixWidth-2) // horizontal check to the right
             {
                 // if the ball is going to the right and it went outside the right screen bound,
                 //ballPosition[0] -= ballPosition[0] - (GameConfig.PixelsMatrixWidth - 1 - (ballRadius - 0.5f)); // correct the position after the bounce
                 //ballSpeed[0] *= -1; // flip the speed direction
-                //IsPaused();
                 OnEndGame();
             }
 
-            if (ballPosition[1] == 0) // vertical check to the top
+            if (ballPosition[1] == 1) // vertical check to the top
             {
                 // if the ball is going up and it went outside the top screen bound,
                 //ballPosition[1] += (ballRadius - 0.5f) - ballPosition[1]; // correct the position after the bounce
                 //ballSpeed[1] *= -1; // flip the speed direction
-                //IsPaused();
                 OnEndGame();
             }
-            else if (ballPosition[1] == 47) // vertical check to the bottom
+            else if (ballPosition[1] == GameConfig.PixelsMatrixHeight-2) // vertical check to the bottom
             {
                 // if the ball is going down and it went outside the bottom screen bound,
                 //ballPosition[1] -= ballPosition[1] - (GameConfig.PixelsMatrixHeight - 1 - (ballRadius - 0.5f)); // correct the position after the bounce
                 //ballSpeed[1] *= -1; // flip the speed direction
-                //IsPaused();
                 OnEndGame();
             }
             if ((ballPosition[0] >= melaPosition[0] - 3 &&
@@ -283,8 +290,16 @@ namespace RetroGameDemo
             {
                 meleMangiate++;
                 meleContatore--;
-                melaX = random.Next(1, 60);
-                melaY = random.Next(1, 40);
+                melaX = random.Next(1, 70);
+                if (ballPosition[0] - melaX < 8)
+                {
+                    melaX = random.Next(1, 70);
+                }
+                melaY = random.Next(1, 47);
+                if (ballPosition[1] - melaY < 5)
+                {
+                    melaY = random.Next(1, 47);
+                }
                 meleContatore++;
             }
 
