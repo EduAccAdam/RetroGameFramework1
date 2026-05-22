@@ -21,6 +21,7 @@
 
 using RetroGameFramework;
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
@@ -42,7 +43,7 @@ namespace RetroGameDemo
         float[] ballPosition; // ball position in screen pixels (float to consider also half pixels)
         float[] ballSpeed; // ball speed in pixels per frame (float to consider also half pixels)
 
-        Random random = new Random(Seed:100);
+        Random random = new Random(Seed:123);
 
         int meleContatore = 0;
         int meleMangiate = 0;
@@ -87,17 +88,7 @@ namespace RetroGameDemo
         }, AnchorType.Center);
         PaintStyle starStyle = PaintStyle.Default;
 
-        GameImage squareImage = GameImage.CreateFromRows(new string[] {
-            "*********",
-            "*       *",
-            "* $$$$$ *",
-            "* $   $ *",
-            "* $ . $ *",
-            "* $   $ *",
-            "* $$$$$ *",
-            "*       *",
-            "*********",
-        }, new char[] { ' ', '*', '$', '.' }, AnchorType.Center);
+ 
         PaintStyle squareStyle1 = PaintStyle.Default;
 
         GameImage squareImage2 = GameImage.CreateFromString(
@@ -203,16 +194,14 @@ namespace RetroGameDemo
             int screenWidth = pixels.GetLength(0);
             int screenHeight = pixels.GetLength(1);
 
-            Console.WriteLine(meleContatore);
+            //Console.WriteLine(meleContatore);
 
             melaPosition = new float[] {melaX,melaY};
 
             // set the foregorund color in the current ball location
             //GameUtils.DrawImageOnScreen(pixels, ballImage, new Point((int)ballPosition[0], (int)ballPosition[1]), ballStyle);
-            
 
             GameUtils.DrawImageOnScreen(pixels, melaImage, new Point((int)melaPosition[0], (int)melaPosition[1]), MelaStyle);
-
 
             DrawBall(pixels, ballColor);
 
@@ -223,14 +212,12 @@ namespace RetroGameDemo
         protected override void OnEndGame()
         {
             //Thread.Sleep(2000);
-            SetPaused(true);
-            //Console.WriteLine(meleMangiate);
-            //Environment.Exit(0);
+            Console.WriteLine(meleMangiate);
+            Environment.Exit(0);
         }
 
         private void UpdateBallPosition()
         {
-
             if (meleContatore == 0 && melaX < 0 && melaY < 0)
             {
                 melaX = random.Next(1, 70);
@@ -296,7 +283,7 @@ namespace RetroGameDemo
                     melaX = random.Next(1, 70);
                 }
                 melaY = random.Next(1, 47);
-                if (ballPosition[1] - melaY < 5)
+                if (ballPosition[1] - melaY < 6)
                 {
                     melaY = random.Next(1, 47);
                 }
