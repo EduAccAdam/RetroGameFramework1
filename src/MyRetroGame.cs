@@ -61,8 +61,9 @@ namespace RetroGameDemo
         float[] TestaX = new float[100];
         float[] TestaY = new float[100];
 
-        
+        int prob = 0;
 
+        bool Immunita = false;
 
         GameImage melaImage = new GameImage(new int[,]
         {
@@ -178,7 +179,7 @@ namespace RetroGameDemo
             MelaStyle.SetColorRemap(1,2);
 
             MelaSpecialeStyle.EnsureColorRemapSize(1);
-            MelaSpecialeStyle.SetColorRemap(1,6);
+            MelaSpecialeStyle.SetColorRemap(1,10);
 
         }
 
@@ -217,8 +218,14 @@ namespace RetroGameDemo
             //GameUtils.DrawImageOnScreen(pixels, ballImage, new Point((int)ballPosition[0], (int)ballPosition[1]), ballStyle);
 
             GameUtils.DrawImageOnScreen(pixels, melaImage, new Point((int)melaPosition[0], (int)melaPosition[1]), MelaStyle);
-            MelaSpeciale:
-                GameUtils.DrawImageOnScreen(pixels, melaImage, new Point((int)melaPosition[0], (int)melaPosition[1]), MelaStyle);
+            if (prob == 0)
+            {
+                prob = random.Next(1, 5);
+            }
+            if (prob == 1)
+            {
+                GameUtils.DrawImageOnScreen(pixels, melaImage, new Point((int)melaPosition[0], (int)melaPosition[1]), MelaSpecialeStyle);
+            }
 
             DrawBall(pixels, ballColor); 
         }
@@ -234,7 +241,8 @@ namespace RetroGameDemo
 
         private void UpdateBallPosition()
         {
-
+            Console.WriteLine(Immunita);
+            //Console.WriteLine(prob);
             for (int i = N - 1; i > 0; i--)
             {
                 TestaX[i] = TestaX[i - 1];
@@ -248,21 +256,12 @@ namespace RetroGameDemo
 
             if (meleContatore == 0 && melaX < 0 && melaY < 0)
             {
-                int prob = random.Next(1, 3);
-                if (prob == 1)
-                {
-
-                }
-                else
-                {
-
-                }
                 melaX = random.Next(1, 70);
                 melaY = random.Next(1, 48);
 
                 meleContatore++;
-
             }
+
 
             ballPosition[0] += ballSpeed[0];
             ballPosition[1] += ballSpeed[1];
@@ -271,14 +270,14 @@ namespace RetroGameDemo
             // The bounce is cheched with a margin to consider the ball dimension
             // In the collision checkings, the radius is always reduced by 0.5 beceuse the center pixel should not be computed.
 
-            if (ballPosition[0] == 1) // horizontal check to the left
+            if (ballPosition[0] == 1 && Immunita == false) // horizontal check to the left
             {
                 // if the ball is going to the left and it went outside the left screen bound,
                 //ballPosition[0] += (ballRadius - 0.5f) - ballPosition[0]; // correct the position after the bounce
                 //ballSpeed[0] *= -1; // flip the speed direction
                 OnEndGame();
             }
-            else if (ballPosition[0] == GameConfig.PixelsMatrixWidth-2) // horizontal check to the right
+            else if (ballPosition[0] == GameConfig.PixelsMatrixWidth-2 && Immunita == false) // horizontal check to the right
             {
                 // if the ball is going to the right and it went outside the right screen bound,
                 //ballPosition[0] -= ballPosition[0] - (GameConfig.PixelsMatrixWidth - 1 - (ballRadius - 0.5f)); // correct the position after the bounce
@@ -286,14 +285,14 @@ namespace RetroGameDemo
                 OnEndGame();
             }
 
-            if (ballPosition[1] == 1) // vertical check to the top
+            if (ballPosition[1] == 1 && Immunita == false) // vertical check to the top
             {
                 // if the ball is going up and it went outside the top screen bound,
                 //ballPosition[1] += (ballRadius - 0.5f) - ballPosition[1]; // correct the position after the bounce
                 //ballSpeed[1] *= -1; // flip the speed direction
                 OnEndGame();
             }
-            else if (ballPosition[1] == GameConfig.PixelsMatrixHeight-2) // vertical check to the bottom
+            else if (ballPosition[1] == GameConfig.PixelsMatrixHeight-2 && Immunita == false) // vertical check to the bottom
             {
                 // if the ball is going down and it went outside the bottom screen bound,
                 //ballPosition[1] -= ballPosition[1] - (GameConfig.PixelsMatrixHeight - 1 - (ballRadius - 0.5f)); // correct the position after the bounce
@@ -308,13 +307,13 @@ namespace RetroGameDemo
                 meleMangiate++;
                 N++;
                 meleContatore--;
+                prob = 0;
+                Immunita = true;
                 melaX = random.Next(1, 70);
                 melaY = random.Next(1, 47);
                 meleContatore++;
-                goto MelaSpeciale; 
+                
             }
-
-
         }
 
         private void DrawBall(int[,] pixels, int color)
