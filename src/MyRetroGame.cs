@@ -23,6 +23,7 @@ using RetroGameFramework;
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Media;
@@ -43,7 +44,7 @@ namespace RetroGameDemo
         float[] ballPosition; // ball position in screen pixels (float to consider also half pixels)
         float[] ballSpeed; // ball speed in pixels per frame (float to consider also half pixels)
 
-        Random random = new Random(Seed:123);
+        Random random = new Random(Seed:10101);
 
         int meleContatore = 0;
         int meleMangiate = 0;
@@ -55,6 +56,14 @@ namespace RetroGameDemo
         int melaX = -1;
         int melaY = -1;
 
+        int N = 3;
+
+        float[] TestaX = new float[100];
+        float[] TestaY = new float[100];
+
+        
+
+
         GameImage melaImage = new GameImage(new int[,]
         {
             {1,1,1},
@@ -63,12 +72,13 @@ namespace RetroGameDemo
         }, AnchorType.Center);
 
         PaintStyle MelaStyle = PaintStyle.Default;
-        
+        PaintStyle MelaSpecialeStyle = PaintStyle.Default;
+
         //
         //
         //
         //
-    GameImage ballImage = new GameImage(new int[,] {
+        GameImage ballImage = new GameImage(new int[,] {
             { 0, 1, 0},
             { 1, 1, 1},
             { 1, 1, 0}
@@ -133,11 +143,13 @@ namespace RetroGameDemo
                 System.Drawing.Color.Cyan,
                 System.Drawing.Color.Blue,
                 System.Drawing.Color.Violet,
-
+                System.Drawing.Color.Black,
+                System.Drawing.Color.Gold
            };
 
             int melaX = random.Next(1, 60);
             int melaY = random.Next(1, 40);
+            
         }
 
         // Called at the start of the first frame of the game.
@@ -164,6 +176,9 @@ namespace RetroGameDemo
             MelaStyle.EnsureColorRemapSize(1);
 
             MelaStyle.SetColorRemap(1,2);
+
+            MelaSpecialeStyle.EnsureColorRemapSize(1);
+            MelaSpecialeStyle.SetColorRemap(1,6);
 
         }
 
@@ -202,9 +217,10 @@ namespace RetroGameDemo
             //GameUtils.DrawImageOnScreen(pixels, ballImage, new Point((int)ballPosition[0], (int)ballPosition[1]), ballStyle);
 
             GameUtils.DrawImageOnScreen(pixels, melaImage, new Point((int)melaPosition[0], (int)melaPosition[1]), MelaStyle);
+            MelaSpeciale:
+                GameUtils.DrawImageOnScreen(pixels, melaImage, new Point((int)melaPosition[0], (int)melaPosition[1]), MelaStyle);
 
-            DrawBall(pixels, ballColor);
-
+            DrawBall(pixels, ballColor); 
         }
 
         // Called at the end of the last frame of the game.
@@ -218,18 +234,32 @@ namespace RetroGameDemo
 
         private void UpdateBallPosition()
         {
+
+            for (int i = N - 1; i > 0; i--)
+            {
+                TestaX[i] = TestaX[i - 1];
+                TestaY[i] = TestaY[i - 1];
+            }
+            if (N > 0)
+            {
+                TestaX[0] = ballPosition[0];
+                TestaY[0] = ballPosition[1];
+            }
+
             if (meleContatore == 0 && melaX < 0 && melaY < 0)
             {
+                int prob = random.Next(1, 3);
+                if (prob == 1)
+                {
+
+                }
+                else
+                {
+
+                }
                 melaX = random.Next(1, 70);
-                if (ballPosition[0] - melaX < 8)
-                {
-                    melaX = random.Next(1, 70);
-                }
                 melaY = random.Next(1, 48);
-                if (ballPosition[1] - melaY < 8)
-                {
-                    melaY = random.Next(1, 48);
-                }
+
                 meleContatore++;
 
             }
@@ -276,18 +306,12 @@ namespace RetroGameDemo
                  ballPosition[1] <= melaPosition[1] + 3))
             {
                 meleMangiate++;
+                N++;
                 meleContatore--;
                 melaX = random.Next(1, 70);
-                if (ballPosition[0] - melaX < 8)
-                {
-                    melaX = random.Next(1, 70);
-                }
                 melaY = random.Next(1, 47);
-                if (ballPosition[1] - melaY < 6)
-                {
-                    melaY = random.Next(1, 47);
-                }
                 meleContatore++;
+                goto MelaSpeciale; 
             }
 
 
@@ -299,13 +323,6 @@ namespace RetroGameDemo
             //                  234 
             //                  659  
             
-            //                  abc
-            //                  def
-            //                  ghj
-
-            //int contatore = 0;
-            //if (contatore == 0)
-            //{
                 DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1], color);  // 2
                 DrawPixel(pixels, ballPosition[0], ballPosition[1] - 1, color);  // 1
                 DrawPixel(pixels, ballPosition[0], ballPosition[1], color);  // 3
@@ -315,7 +332,19 @@ namespace RetroGameDemo
                 DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1] - 1, color);  // 7
                 DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] + 1, color);  // 9
                 DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] - 1, color);  // 8
-                //contatore++;
+
+            for (int i = 0; i < N; i++)
+            {
+                DrawPixel(pixels, TestaX[i] - 1, TestaY[i], color); 
+                DrawPixel(pixels, TestaX[i], TestaY[i] - 1, color); 
+                DrawPixel(pixels, TestaX[i], TestaY[i], color); 
+                DrawPixel(pixels, TestaX[i], TestaY[i] + 1, color); 
+                DrawPixel(pixels, TestaX[i] + 1, TestaY[i], color); 
+                DrawPixel(pixels, TestaX[i] - 1, TestaY[i] + 1, color); 
+                DrawPixel(pixels, TestaX[i] - 1, TestaY[i] - 1, color);
+                DrawPixel(pixels, TestaX[i] + 1, TestaY[i] + 1, color);
+                DrawPixel(pixels, TestaX[i] + 1, TestaY[i] - 1, color);
+            }
             //}
             /*else if (contatore == 1)
             {
@@ -328,7 +357,7 @@ namespace RetroGameDemo
                 DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1] + 2, color);  // a
                 DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] + 4, color);  // j
                 DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] + 2, color);  // c
-            }*/          
+            }*/
 
         }
 
