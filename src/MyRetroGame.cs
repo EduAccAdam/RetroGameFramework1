@@ -44,7 +44,7 @@ namespace RetroGameDemo
         float[] ballPosition; // ball position in screen pixels (float to consider also half pixels)
         float[] ballSpeed; // ball speed in pixels per frame (float to consider also half pixels)
 
-        Random random = new Random(Seed:10101);
+        Random random = new Random(Seed:11);
 
         int meleContatore = 0;
         int meleMangiate = 0;
@@ -56,7 +56,7 @@ namespace RetroGameDemo
         int melaX = -1;
         int melaY = -1;
 
-        int N = 3;
+        int N = 0;
 
         float[] TestaX = new float[100];
         float[] TestaY = new float[100];
@@ -64,6 +64,7 @@ namespace RetroGameDemo
         int prob = 0;
 
         bool Immunita = false;
+        int immunitaFrames = 0;
 
         GameImage melaImage = new GameImage(new int[,]
         {
@@ -162,6 +163,12 @@ namespace RetroGameDemo
 
             // give the fall a speed
             ballSpeed = new float[] { 0,0 };
+
+            for (int i = 0; i < TestaX.Length; i++)
+            {
+                TestaX[i] = ballPosition[0];
+                TestaY[i] = ballPosition[1];
+            }
 
             ballStyle.SetColorRemap(1, 2); // start from first additional color;
 
@@ -266,6 +273,24 @@ namespace RetroGameDemo
             ballPosition[0] += ballSpeed[0];
             ballPosition[1] += ballSpeed[1];
 
+            for (int i = 0; i < N; i++)
+            {
+                if (ballPosition[0] == TestaX[i] && ballPosition[1] == TestaY[i] && Immunita == false)
+                {
+                    OnEndGame();
+                }
+            }
+
+            if (Immunita)
+            {
+                immunitaFrames++;
+                if (immunitaFrames == GameConfig.FrameRate * 5)
+                {
+                    Immunita = false;
+                    immunitaFrames = 0;
+                }
+            }
+
             // Check hits with screen bounds to make the ball bounce
             // The bounce is cheched with a margin to consider the ball dimension
             // In the collision checkings, the radius is always reduced by 0.5 beceuse the center pixel should not be computed.
@@ -304,16 +329,35 @@ namespace RetroGameDemo
                  ballPosition[1] >= melaPosition[1] - 3 &&
                  ballPosition[1] <= melaPosition[1] + 3))
             {
+                if (N > 0)
+                {
+                    TestaX[N] = TestaX[N - 1];
+                    TestaY[N] = TestaY[N - 1];
+                }
+                else
+                {
+                    TestaX[N] = ballPosition[0];
+                    TestaY[N] = ballPosition[1];
+                }
                 meleMangiate++;
                 N++;
-                meleContatore--;
+                if (prob == 1)
+                {
+                    Immunita = true;
+                    immunitaFrames = 0;
+                }
+                else
+                {
+                    Immunita = false;
+                }
                 prob = 0;
-                Immunita = true;
+                meleContatore--;
                 melaX = random.Next(1, 70);
                 melaY = random.Next(1, 47);
                 meleContatore++;
                 
             }
+            
         }
 
         private void DrawBall(int[,] pixels, int color)
@@ -344,19 +388,6 @@ namespace RetroGameDemo
                 DrawPixel(pixels, TestaX[i] + 1, TestaY[i] + 1, color);
                 DrawPixel(pixels, TestaX[i] + 1, TestaY[i] - 1, color);
             }
-            //}
-            /*else if (contatore == 1)
-            {
-                DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1] + 3, color);  // d
-                DrawPixel(pixels, ballPosition[0], ballPosition[1] + 2, color);  // b
-                DrawPixel(pixels, ballPosition[0], ballPosition[1] + 3, color);  // e
-                DrawPixel(pixels, ballPosition[0], ballPosition[1] + 4, color);  // h
-                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] + 3, color);  // f
-                DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1] + 4, color);  // g
-                DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1] + 2, color);  // a
-                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] + 4, color);  // j
-                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] + 2, color);  // c
-            }*/
 
         }
 
@@ -383,19 +414,35 @@ namespace RetroGameDemo
 
                 if (KeyCode == Keys.Up || KeyCode == Keys.W)
                 {
-                    ballSpeed = new float[] { 0, -1 };
+                    if (ballSpeed[1] != 1)
+                    {
+                        ballSpeed = new float[] { 0, -1 };
+                    }
+                    
                 }
                 else if (KeyCode == Keys.Down || KeyCode == Keys.S)
                 {
-                    ballSpeed = new float[] { 0, 1 };
+                    if (ballSpeed[1] != -1)
+                    {
+                        ballSpeed = new float[] { 0, 1 };
+                    }
+                    
                 }
                 else if (KeyCode == Keys.Right || KeyCode == Keys.D)
                 {
-                    ballSpeed = new float[] { 1, 0 };
+                    if (ballSpeed[0] != -1)
+                    {
+                        ballSpeed = new float[] { 1, 0 };
+                    }
+                    
                 }
                 else if (KeyCode == Keys.Left || KeyCode == Keys.A)
                 {
-                    ballSpeed = new float[] { -1, 0 };
+                    if (ballSpeed[0] != 1)
+                    {
+                        ballSpeed = new float[] { -1, 0 };
+                    }
+                    
                 }
                 if (KeyCode == Keys.P)
                 {
