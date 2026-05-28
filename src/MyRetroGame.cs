@@ -44,7 +44,7 @@ namespace RetroGameDemo
         float[] ballPosition; // ball position in screen pixels (float to consider also half pixels)
         float[] ballSpeed; // ball speed in pixels per frame (float to consider also half pixels)
 
-        Random random = new Random(Seed:11);
+        Random random = new Random();
 
         int meleContatore = 0;
         int meleMangiate = 0;
@@ -53,8 +53,9 @@ namespace RetroGameDemo
 
         int ballColor = 1;
 
-        int melaX = -1;
-        int melaY = -1;
+        int[] melaX = new int[] {-1,-1,-1,-1,-1,-1};
+        int[] melaY = new int[] { -1, -1, -1, -1 ,-1,-1};
+        int MaxMele = 1;
 
         int N = 0;
 
@@ -65,6 +66,8 @@ namespace RetroGameDemo
 
         bool Immunita = false;
         int immunitaFrames = 0;
+
+        string melaMangiateStr = "0";
 
         GameImage melaImage = new GameImage(new int[,]
         {
@@ -118,6 +121,8 @@ namespace RetroGameDemo
 
         GameImage hearthImage = GameImage.CreateFromResource("hearth", AnchorType.Center);
         PaintStyle hearthStyle = PaintStyle.Default;
+
+        PaintStyle textStyle = PaintStyle.Default;
         //
         // 
         //
@@ -146,7 +151,8 @@ namespace RetroGameDemo
                 System.Drawing.Color.Blue,
                 System.Drawing.Color.Violet,
                 System.Drawing.Color.Black,
-                System.Drawing.Color.Gold
+                System.Drawing.Color.Gold,
+                System.Drawing.Color.White,
            };
 
             int melaX = random.Next(1, 60);
@@ -188,6 +194,10 @@ namespace RetroGameDemo
             MelaSpecialeStyle.EnsureColorRemapSize(1);
             MelaSpecialeStyle.SetColorRemap(1,10);
 
+            textStyle.EnsureColorRemapSize(1);
+            textStyle.transparentBackground = true;
+            textStyle.SetColorRemap(1,11);
+
         }
 
         // Called once per frame, BEFORE the OnLoopGame event.
@@ -219,22 +229,34 @@ namespace RetroGameDemo
 
             //Console.WriteLine(meleContatore);
 
-            melaPosition = new float[] {melaX,melaY};
+            for (int m = 0; m < MaxMele; m++)
+            {
+                if (melaX[m] >= 0 && melaY[m] >= 0)
+                {
+                    if (prob == 1 && m == 0)
+                    {
+                        GameUtils.DrawImageOnScreen(pixels, melaImage, new Point(melaX[m], melaY[m]), MelaSpecialeStyle);
+                    }
+                    else
+                    {
+                        GameUtils.DrawImageOnScreen(pixels, melaImage, new Point(melaX[m], melaY[m]), MelaStyle);
+                    }
+                }
+            }          
 
             // set the foregorund color in the current ball location
             //GameUtils.DrawImageOnScreen(pixels, ballImage, new Point((int)ballPosition[0], (int)ballPosition[1]), ballStyle);
 
-            GameUtils.DrawImageOnScreen(pixels, melaImage, new Point((int)melaPosition[0], (int)melaPosition[1]), MelaStyle);
-            if (prob == 0)
-            {
-                prob = random.Next(1, 5);
-            }
-            if (prob == 1)
-            {
-                GameUtils.DrawImageOnScreen(pixels, melaImage, new Point((int)melaPosition[0], (int)melaPosition[1]), MelaSpecialeStyle);
-            }
 
-            DrawBall(pixels, ballColor); 
+            Writing.Print(pixels, melaMangiateStr, Writing.Top_Right);
+
+            DrawBall(pixels, ballColor);
+
+            if (Immunita == true)
+            {
+                int secondiRimanenti = (GameConfig.FrameRate * 5 - immunitaFrames) / GameConfig.FrameRate;
+                Writing.Print(pixels, secondiRimanenti.ToString(), Writing.Top_Left);
+            }
         }
 
         // Called at the end of the last frame of the game.
@@ -248,7 +270,15 @@ namespace RetroGameDemo
 
         private void UpdateBallPosition()
         {
-            Console.WriteLine(Immunita);
+            if (Immunita)
+            {
+                MaxMele = 6;
+            }
+            else
+            {
+                MaxMele = 1;
+            }
+
             //Console.WriteLine(prob);
             for (int i = N - 1; i > 0; i--)
             {
@@ -261,12 +291,22 @@ namespace RetroGameDemo
                 TestaY[0] = ballPosition[1];
             }
 
-            if (meleContatore == 0 && melaX < 0 && melaY < 0)
+            for (int m = 0; m < MaxMele; m++)
             {
-                melaX = random.Next(1, 70);
-                melaY = random.Next(1, 48);
-
-                meleContatore++;
+                if (melaX[m] < 0 || melaY[m] < 0)
+                {
+                    melaX[m] = random.Next(1, 70);
+                    melaY[m] = random.Next(1, 47);
+                    if (m == 0)
+                    {
+                        prob = random.Next(1, 3);
+                    }
+                }
+            }
+            for (int m = MaxMele; m < melaX.Length; m++)
+            {
+                melaX[m] = -1;
+                melaY[m] = -1;
             }
 
 
@@ -302,7 +342,7 @@ namespace RetroGameDemo
                 //ballSpeed[0] *= -1; // flip the speed direction
                 OnEndGame();
             }
-            else if (ballPosition[0] == GameConfig.PixelsMatrixWidth-2 && Immunita == false) // horizontal check to the right
+            else if (ballPosition[0] == GameConfig.PixelsMatrixWidth - 2 && Immunita == false) // horizontal check to the right
             {
                 // if the ball is going to the right and it went outside the right screen bound,
                 //ballPosition[0] -= ballPosition[0] - (GameConfig.PixelsMatrixWidth - 1 - (ballRadius - 0.5f)); // correct the position after the bounce
@@ -317,48 +357,50 @@ namespace RetroGameDemo
                 //ballSpeed[1] *= -1; // flip the speed direction
                 OnEndGame();
             }
-            else if (ballPosition[1] == GameConfig.PixelsMatrixHeight-2 && Immunita == false) // vertical check to the bottom
+            else if (ballPosition[1] == GameConfig.PixelsMatrixHeight - 2 && Immunita == false) // vertical check to the bottom
             {
                 // if the ball is going down and it went outside the bottom screen bound,
                 //ballPosition[1] -= ballPosition[1] - (GameConfig.PixelsMatrixHeight - 1 - (ballRadius - 0.5f)); // correct the position after the bounce
                 //ballSpeed[1] *= -1; // flip the speed direction
                 OnEndGame();
             }
-            if ((ballPosition[0] >= melaPosition[0] - 3 &&
-                 ballPosition[0] <= melaPosition[0] + 3 &&
-                 ballPosition[1] >= melaPosition[1] - 3 &&
-                 ballPosition[1] <= melaPosition[1] + 3))
+            for (int m = 0; m < MaxMele; m++)
             {
-                if (N > 0)
+                if ((melaX[m] >= 0 && melaY[m] >= 0 &&
+                    ballPosition[0] >= melaX[m] - 3 &&
+                    ballPosition[0] <= melaX[m] + 3 &&
+                    ballPosition[1] >= melaY[m] - 3 &&
+                    ballPosition[1] <= melaY[m] + 3))
                 {
-                    TestaX[N] = TestaX[N - 1];
-                    TestaY[N] = TestaY[N - 1];
+                    if (N > 0)
+                    {
+                        TestaX[N] = TestaX[N - 1];
+                        TestaY[N] = TestaY[N - 1];
+                    }
+                    else
+                    {
+                        TestaX[N] = ballPosition[0];
+                        TestaY[N] = ballPosition[1];
+                    }
+                    meleMangiate++;
+                    melaMangiateStr = meleMangiate.ToString();
+                    N++;
+                    if (prob == 1 && m == 0)
+                    {
+                        Immunita = true;
+                        immunitaFrames = 0;
+                    }
+                    melaX[m] = random.Next(1, 70);
+                    melaY[m] = random.Next(1, 47);
                 }
-                else
-                {
-                    TestaX[N] = ballPosition[0];
-                    TestaY[N] = ballPosition[1];
-                }
-                meleMangiate++;
-                N++;
-                if (prob == 1)
-                {
-                    Immunita = true;
-                    immunitaFrames = 0;
-                }
-                else
-                {
-                    Immunita = false;
-                }
-                prob = 0;
-                meleContatore--;
-                melaX = random.Next(1, 70);
-                melaY = random.Next(1, 47);
-                meleContatore++;
-                
+
+
             }
-            
+             
         }
+
+            
+    
 
         private void DrawBall(int[,] pixels, int color)
         {
