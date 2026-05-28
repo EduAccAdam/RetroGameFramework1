@@ -46,10 +46,7 @@ namespace RetroGameDemo
 
         Random random = new Random();
 
-        int meleContatore = 0;
         int meleMangiate = 0;
-
-        float[] melaPosition;
 
         int ballColor = 1;
 
@@ -295,11 +292,11 @@ namespace RetroGameDemo
             {
                 if (melaX[m] < 0 || melaY[m] < 0)
                 {
-                    melaX[m] = random.Next(1, 70);
-                    melaY[m] = random.Next(1, 47);
+                    melaX[m] = random.Next(1, 68);
+                    melaY[m] = random.Next(1, 45);
                     if (m == 0)
                     {
-                        prob = random.Next(1, 3);
+                        prob = random.Next(1, 5);
                     }
                 }
             }
@@ -390,8 +387,8 @@ namespace RetroGameDemo
                         Immunita = true;
                         immunitaFrames = 0;
                     }
-                    melaX[m] = random.Next(1, 70);
-                    melaY[m] = random.Next(1, 47);
+                    melaX[m] = -1;
+                    melaY[m] = -1;
                 }
 
 
