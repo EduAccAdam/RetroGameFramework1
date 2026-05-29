@@ -50,7 +50,7 @@ namespace RetroGameDemo
 
         int ballColor = 1;
 
-        int[] melaX = new int[] {-1,-1,-1,-1,-1,-1};
+        int[] melaX = new int[] {-1, -1, -1, -1, -1, -1};
         int[] melaY = new int[] { -1, -1, -1, -1 ,-1,-1};
         int MaxMele = 1;
 
@@ -258,13 +258,18 @@ namespace RetroGameDemo
                 int secondiRimanenti = (GameConfig.FrameRate * 5 - immunitaFrames) / GameConfig.FrameRate;
                 Writing.Print(pixels, secondiRimanenti.ToString(), Writing.Top_Left,textStyle);
             }
+            if (end == true)
+            {
+                SetPaused(true);
+                Writing.Print(pixels, "Hai perso down", Writing.Bottom_Left);
+            }
         }
 
         // Called at the end of the last frame of the game.
         // Its main purpose it's to dispose resources, as the game will end immediately after this call.
         protected override void OnEndGame()
         {
-            Environment.Exit(0);
+            end = true;
         }
 
         private void UpdateBallPosition()
