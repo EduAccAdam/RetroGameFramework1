@@ -44,7 +44,7 @@ namespace RetroGameDemo
         float[] ballPosition; // ball position in screen pixels (float to consider also half pixels)
         float[] ballSpeed; // ball speed in pixels per frame (float to consider also half pixels)
 
-        Random random = new Random();
+        Random random = new Random(Seed:123);
 
         int meleMangiate = 0;
 
@@ -63,6 +63,8 @@ namespace RetroGameDemo
 
         bool Immunita = false;
         int immunitaFrames = 0;
+
+        bool end = false;
 
         string melaMangiateStr = "0";
 
@@ -134,6 +136,8 @@ namespace RetroGameDemo
 
             GameConfig.FrameRate = 20;
 
+            
+
             GameConfig.BackgroundColor = System.Drawing.Color.FromArgb(255, 34, 139, 34);
             
             //GameForm.Initializer.ForegroundColor = System.Drawing.Color.White;
@@ -191,8 +195,6 @@ namespace RetroGameDemo
             MelaSpecialeStyle.EnsureColorRemapSize(1);
             MelaSpecialeStyle.SetColorRemap(1,10);
 
-            textStyle.EnsureColorRemapSize(1);
-            textStyle.transparentBackground = true;
             textStyle.SetColorRemap(1,11);
 
         }
@@ -239,20 +241,22 @@ namespace RetroGameDemo
                         GameUtils.DrawImageOnScreen(pixels, melaImage, new Point(melaX[m], melaY[m]), MelaStyle);
                     }
                 }
-            }          
+            }
+           
+            
 
             // set the foregorund color in the current ball location
             //GameUtils.DrawImageOnScreen(pixels, ballImage, new Point((int)ballPosition[0], (int)ballPosition[1]), ballStyle);
 
 
-            Writing.Print(pixels, melaMangiateStr, Writing.Top_Right);
+            Writing.Print(pixels, melaMangiateStr, Writing.Top_Right, textStyle);
 
             DrawBall(pixels, ballColor);
 
             if (Immunita == true)
             {
                 int secondiRimanenti = (GameConfig.FrameRate * 5 - immunitaFrames) / GameConfig.FrameRate;
-                Writing.Print(pixels, secondiRimanenti.ToString(), Writing.Top_Left);
+                Writing.Print(pixels, secondiRimanenti.ToString(), Writing.Top_Left,textStyle);
             }
         }
 
@@ -260,8 +264,6 @@ namespace RetroGameDemo
         // Its main purpose it's to dispose resources, as the game will end immediately after this call.
         protected override void OnEndGame()
         {
-            //Thread.Sleep(2000);
-            Console.WriteLine(meleMangiate);
             Environment.Exit(0);
         }
 
@@ -320,6 +322,7 @@ namespace RetroGameDemo
 
             if (Immunita)
             {
+                prob = 0;
                 immunitaFrames++;
                 if (immunitaFrames == GameConfig.FrameRate * 5)
                 {
@@ -351,7 +354,7 @@ namespace RetroGameDemo
             {
                 // if the ball is going up and it went outside the top screen bound,
                 //ballPosition[1] += (ballRadius - 0.5f) - ballPosition[1]; // correct the position after the bounce
-                //ballSpeed[1] *= -1; // flip the speed direction
+                //ballSpeed[1] *= -1; // flip the speed
                 OnEndGame();
             }
             else if (ballPosition[1] == GameConfig.PixelsMatrixHeight - 2 && Immunita == false) // vertical check to the bottom
@@ -371,17 +374,25 @@ namespace RetroGameDemo
                 {
                     if (N > 0)
                     {
-                        TestaX[N] = TestaX[N - 1];
-                        TestaY[N] = TestaY[N - 1];
+                        TestaX[N] = TestaX[N--];
+                        TestaY[N] = TestaY[N--];
                     }
                     else
                     {
                         TestaX[N] = ballPosition[0];
                         TestaY[N] = ballPosition[1];
                     }
-                    meleMangiate++;
+                    if (Immunita == false)
+                    {
+                        meleMangiate++;
+                        N++;
+                    }
+                    else
+                    {
+                        meleMangiate += 2;
+                        N += 2;
+                    }
                     melaMangiateStr = meleMangiate.ToString();
-                    N++;
                     if (prob == 1 && m == 0)
                     {
                         Immunita = true;
@@ -457,6 +468,10 @@ namespace RetroGameDemo
                     {
                         ballSpeed = new float[] { 0, -1 };
                     }
+                    if (Immunita)
+                    {
+                        ballSpeed = new float[] { 0, -2 };
+                    }
                     
                 }
                 else if (KeyCode == Keys.Down || KeyCode == Keys.S)
@@ -464,6 +479,10 @@ namespace RetroGameDemo
                     if (ballSpeed[1] != -1)
                     {
                         ballSpeed = new float[] { 0, 1 };
+                    }
+                    if (Immunita)
+                    {
+                        ballSpeed = new float[] { 0, 2 };
                     }
                     
                 }
@@ -473,6 +492,10 @@ namespace RetroGameDemo
                     {
                         ballSpeed = new float[] { 1, 0 };
                     }
+                    if (Immunita)
+                    {
+                        ballSpeed = new float[] { 2, 0 };
+                    }
                     
                 }
                 else if (KeyCode == Keys.Left || KeyCode == Keys.A)
@@ -480,6 +503,10 @@ namespace RetroGameDemo
                     if (ballSpeed[0] != 1)
                     {
                         ballSpeed = new float[] { -1, 0 };
+                    }
+                    if (Immunita)
+                    {
+                        ballSpeed = new float[] { -2, 0 };
                     }
                     
                 }
