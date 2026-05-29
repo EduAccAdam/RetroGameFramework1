@@ -50,8 +50,8 @@ namespace RetroGameDemo
 
         int ballColor = 1;
 
-        int[] melaX = new int[] {-1, -1, -1, -1, -1, -1};
-        int[] melaY = new int[] { -1, -1, -1, -1 ,-1,-1};
+        int[] melaX = new int[] {-1, -1, -1, -1, -1, -1, -1, -1, -1};
+        int[] melaY = new int[] { -1, -1, -1, -1 ,-1, -1, -1, -1, -1 };
         int MaxMele = 1;
 
         int N = 0;
@@ -66,7 +66,7 @@ namespace RetroGameDemo
 
         bool end = false;
 
-        string melaMangiateStr = "0";
+        int secondiRimanenti = 0;
 
         GameImage melaImage = new GameImage(new int[,]
         {
@@ -75,8 +75,12 @@ namespace RetroGameDemo
             {1,1,1}
         }, AnchorType.Center);
 
+
+
+        
         PaintStyle MelaStyle = PaintStyle.Default;
-        PaintStyle MelaSpecialeStyle = PaintStyle.Default;
+        PaintStyle MelaGoldenStyle = PaintStyle.Default;
+        PaintStyle MelaPurple = PaintStyle.Default;
 
         //
         //
@@ -130,9 +134,9 @@ namespace RetroGameDemo
         {
             GameConfig.Title = "Adam_Snake";
 
-            GameConfig.PixelsMatrixWidth = 70;
-            GameConfig.PixelsMatrixHeight = 48;
-            GameConfig.PixelSize = 15;
+            GameConfig.PixelsMatrixWidth = 160;
+            GameConfig.PixelsMatrixHeight = 111;
+            GameConfig.PixelSize = 8;
 
             GameConfig.FrameRate = 20;
 
@@ -150,14 +154,14 @@ namespace RetroGameDemo
                 System.Drawing.Color.Purple,
                 System.Drawing.Color.Cyan,
                 System.Drawing.Color.Blue,
-                System.Drawing.Color.Violet,
+                System.Drawing.Color.Purple,
                 System.Drawing.Color.Black,
                 System.Drawing.Color.Gold,
                 System.Drawing.Color.White,
            };
 
-            int melaX = random.Next(1, 60);
-            int melaY = random.Next(1, 40);
+            int melaX = random.Next(1, 158);
+            int melaY = random.Next(1, 109);
             
         }
 
@@ -192,8 +196,9 @@ namespace RetroGameDemo
 
             MelaStyle.SetColorRemap(1,2);
 
-            MelaSpecialeStyle.EnsureColorRemapSize(1);
-            MelaSpecialeStyle.SetColorRemap(1,10);
+            MelaGoldenStyle.SetColorRemap(1,10);
+
+            MelaPurple.SetColorRemap(1, 8);
 
             textStyle.SetColorRemap(1,11);
 
@@ -234,7 +239,7 @@ namespace RetroGameDemo
                 {
                     if (prob == 1 && m == 0)
                     {
-                        GameUtils.DrawImageOnScreen(pixels, melaImage, new Point(melaX[m], melaY[m]), MelaSpecialeStyle);
+                        GameUtils.DrawImageOnScreen(pixels, melaImage, new Point(melaX[m], melaY[m]), MelaGoldenStyle);
                     }
                     else
                     {
@@ -249,19 +254,20 @@ namespace RetroGameDemo
             //GameUtils.DrawImageOnScreen(pixels, ballImage, new Point((int)ballPosition[0], (int)ballPosition[1]), ballStyle);
 
 
-            Writing.Print(pixels, melaMangiateStr, Writing.Top_Right, textStyle);
-
             DrawBall(pixels, ballColor);
 
             if (Immunita == true)
             {
-                int secondiRimanenti = (GameConfig.FrameRate * 5 - immunitaFrames) / GameConfig.FrameRate;
+                secondiRimanenti = (GameConfig.FrameRate * 8 - immunitaFrames) / GameConfig.FrameRate;
                 Writing.Print(pixels, secondiRimanenti.ToString(), Writing.Top_Left,textStyle);
             }
             if (end == true)
             {
-                SetPaused(true);
-                Writing.Print(pixels, "Hai perso down", Writing.Bottom_Left);
+                GameConfig.FrameRate = 0;
+                GameUtils.ClearScreen(pixels);
+                Writing.Print(pixels, $"Hai perso punteggio di: {meleMangiate}{Environment.NewLine}{Environment.NewLine}" +
+                    $"ESC per uscire{Environment.NewLine}{Environment.NewLine}", Writing.Top_Left,textStyle);
+
             }
         }
 
@@ -276,7 +282,7 @@ namespace RetroGameDemo
         {
             if (Immunita)
             {
-                MaxMele = 6;
+                MaxMele = 9;
             }
             else
             {
@@ -299,8 +305,8 @@ namespace RetroGameDemo
             {
                 if (melaX[m] < 0 || melaY[m] < 0)
                 {
-                    melaX[m] = random.Next(1, 68);
-                    melaY[m] = random.Next(1, 45);
+                    melaX[m] = random.Next(1, 158);
+                    melaY[m] = random.Next(1, 109);
                     if (m == 0)
                     {
                         prob = random.Next(1, 5);
@@ -329,7 +335,7 @@ namespace RetroGameDemo
             {
                 prob = 0;
                 immunitaFrames++;
-                if (immunitaFrames == GameConfig.FrameRate * 5)
+                if (immunitaFrames == GameConfig.FrameRate * 8)
                 {
                     Immunita = false;
                     immunitaFrames = 0;
@@ -340,35 +346,26 @@ namespace RetroGameDemo
             // The bounce is cheched with a margin to consider the ball dimension
             // In the collision checkings, the radius is always reduced by 0.5 beceuse the center pixel should not be computed.
 
-            if (ballPosition[0] == 1 && Immunita == false) // horizontal check to the left
+            if (ballPosition[0] <= 0)
             {
-                // if the ball is going to the left and it went outside the left screen bound,
-                //ballPosition[0] += (ballRadius - 0.5f) - ballPosition[0]; // correct the position after the bounce
-                //ballSpeed[0] *= -1; // flip the speed direction
-                OnEndGame();
+                ballPosition[0] = GameConfig.PixelsMatrixWidth - 1;
             }
-            else if (ballPosition[0] == GameConfig.PixelsMatrixWidth - 2 && Immunita == false) // horizontal check to the right
+                
+            else if (ballPosition[0] >= GameConfig.PixelsMatrixWidth)
             {
-                // if the ball is going to the right and it went outside the right screen bound,
-                //ballPosition[0] -= ballPosition[0] - (GameConfig.PixelsMatrixWidth - 1 - (ballRadius - 0.5f)); // correct the position after the bounce
-                //ballSpeed[0] *= -1; // flip the speed direction
-                OnEndGame();
+                ballPosition[0] = 0;
             }
-
-            if (ballPosition[1] == 1 && Immunita == false) // vertical check to the top
+                
+            if (ballPosition[1] <= 0)
             {
-                // if the ball is going up and it went outside the top screen bound,
-                //ballPosition[1] += (ballRadius - 0.5f) - ballPosition[1]; // correct the position after the bounce
-                //ballSpeed[1] *= -1; // flip the speed
-                OnEndGame();
+                ballPosition[1] = GameConfig.PixelsMatrixHeight - 1;
             }
-            else if (ballPosition[1] == GameConfig.PixelsMatrixHeight - 2 && Immunita == false) // vertical check to the bottom
+                
+            else if (ballPosition[1] >= GameConfig.PixelsMatrixHeight)
             {
-                // if the ball is going down and it went outside the bottom screen bound,
-                //ballPosition[1] -= ballPosition[1] - (GameConfig.PixelsMatrixHeight - 1 - (ballRadius - 0.5f)); // correct the position after the bounce
-                //ballSpeed[1] *= -1; // flip the speed direction
-                OnEndGame();
+                ballPosition[1] = 0;
             }
+                
             for (int m = 0; m < MaxMele; m++)
             {
                 if ((melaX[m] >= 0 && melaY[m] >= 0 &&
@@ -379,25 +376,29 @@ namespace RetroGameDemo
                 {
                     if (N > 0)
                     {
-                        TestaX[N] = TestaX[N--];
-                        TestaY[N] = TestaY[N--];
+                        TestaX[N] = TestaX[N-1];
+                        TestaY[N] = TestaY[N-1];
+                        TestaX[N + 1] = TestaX[N - 1];
+                        TestaY[N + 1] = TestaY[N - 1];
                     }
                     else
                     {
                         TestaX[N] = ballPosition[0];
                         TestaY[N] = ballPosition[1];
+                        TestaX[N + 1] = ballPosition[0];
+                        TestaY[N + 1] = ballPosition[1];
                     }
                     if (Immunita == false)
                     {
                         meleMangiate++;
-                        N++;
+                        N += 1;
                     }
                     else
                     {
                         meleMangiate += 2;
                         N += 2;
                     }
-                    melaMangiateStr = meleMangiate.ToString();
+
                     if (prob == 1 && m == 0)
                     {
                         Immunita = true;
@@ -469,52 +470,56 @@ namespace RetroGameDemo
 
                 if (KeyCode == Keys.Up || KeyCode == Keys.W)
                 {
-                    if (ballSpeed[1] != 1)
-                    {
-                        ballSpeed = new float[] { 0, -1 };
-                    }
-                    if (Immunita)
+                    if (ballSpeed[1] != 2)
                     {
                         ballSpeed = new float[] { 0, -2 };
                     }
-                    
+                    if (Immunita)
+                    {
+                        ballSpeed = new float[] { 0, -3 };
+                    }
                 }
                 else if (KeyCode == Keys.Down || KeyCode == Keys.S)
                 {
-                    if (ballSpeed[1] != -1)
+                    if (ballSpeed[1] != -2)
                     {
-                        ballSpeed = new float[] { 0, 1 };
+                        ballSpeed = new float[] { 0, 2 };
                     }
                     if (Immunita)
                     {
-                        ballSpeed = new float[] { 0, 2 };
+                        ballSpeed = new float[] { 0, 3 };
                     }
                     
                 }
                 else if (KeyCode == Keys.Right || KeyCode == Keys.D)
                 {
-                    if (ballSpeed[0] != -1)
+                    if (ballSpeed[0] != -2)
                     {
-                        ballSpeed = new float[] { 1, 0 };
+                        ballSpeed = new float[] { 2, 0 };
                     }
                     if (Immunita)
                     {
-                        ballSpeed = new float[] { 2, 0 };
+                        ballSpeed = new float[] { 3, 0 };
                     }
                     
                 }
                 else if (KeyCode == Keys.Left || KeyCode == Keys.A)
                 {
-                    if (ballSpeed[0] != 1)
-                    {
-                        ballSpeed = new float[] { -1, 0 };
-                    }
-                    if (Immunita)
+                    if (ballSpeed[0] != 2)
                     {
                         ballSpeed = new float[] { -2, 0 };
                     }
+                    if (Immunita)
+                    {
+                        ballSpeed = new float[] { -3, 0 };
+                    }
                     
                 }
+                if (end == true && KeyCode == Keys.Escape)
+                {
+                    Environment.Exit(0);
+                }
+
                 if (KeyCode == Keys.P)
                 {
                     SetPaused(true);
