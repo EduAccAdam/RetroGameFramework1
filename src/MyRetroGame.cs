@@ -27,6 +27,7 @@ using System.Drawing;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Media;
 
 namespace RetroGameDemo
@@ -71,6 +72,9 @@ namespace RetroGameDemo
 
         int[] allowedColor = new int[] { 2, 3, 5, 6, 7, 8 };
         int indexColor = 0;
+
+        int occhi = 9;
+        int bocca = 2;
 
         GameImage melaImage = new GameImage(new int[,]
         {
@@ -451,17 +455,89 @@ namespace RetroGameDemo
         {
             // BALL EXAMPLE:    718 
             //                  234 
-            //                  659  
-            
+            //                  659
+            //                   a
+            //                    b
+            if (ballSpeed[0] > 0)
+            {
+                DrawPixel(pixels, ballPosition[0], ballPosition[1] - 1, occhi);  // 1
+                DrawPixel(pixels, ballPosition[0], ballPosition[1] + 1, occhi);  // 5
                 DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1], color);  // 2
-                DrawPixel(pixels, ballPosition[0], ballPosition[1] - 1, color);  // 1
                 DrawPixel(pixels, ballPosition[0], ballPosition[1], color);  // 3
-                DrawPixel(pixels, ballPosition[0], ballPosition[1] + 1, color);  // 5
                 DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1], color);  // 4
                 DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1] + 1, color);  // 6
                 DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1] - 1, color);  // 7
                 DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] + 1, color);  // 9
                 DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] - 1, color);  // 8
+                DrawPixel(pixels, ballPosition[0] + 2, ballPosition[1], bocca);
+                DrawPixel(pixels, ballPosition[0] + 3, ballPosition[1], bocca);// a
+                DrawPixel(pixels, ballPosition[0] + 4, ballPosition[1] + 1, bocca);  // b
+            }
+            if (ballSpeed[0] < 0)
+            {
+                DrawPixel(pixels, ballPosition[0], ballPosition[1] - 1, occhi);  // 1
+                DrawPixel(pixels, ballPosition[0], ballPosition[1] + 1, occhi);  // 5
+                DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1], color);  // 2
+                DrawPixel(pixels, ballPosition[0], ballPosition[1], color);  // 3
+                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1], color);  // 4
+                DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1] + 1, color);  // 6
+                DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1] - 1, color);  // 7
+                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] + 1, color);  // 9
+                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] - 1, color);  // 8
+                DrawPixel(pixels, ballPosition[0] - 2, ballPosition[1], bocca);
+                DrawPixel(pixels, ballPosition[0] - 3, ballPosition[1], bocca);// a
+                DrawPixel(pixels, ballPosition[0] - 4, ballPosition[1] + 1, bocca);  // b
+
+            }
+            if (ballSpeed[1] > 0)
+            {
+                DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1], occhi);  // 2
+                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] , occhi);  // 5
+                DrawPixel(pixels, ballPosition[0], ballPosition[1] - 1, color);  // 1
+                DrawPixel(pixels, ballPosition[0], ballPosition[1], color);  // 3
+                DrawPixel(pixels, ballPosition[0], ballPosition[1] + 1, color);  // 5
+                DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1] + 1, color);  // 6
+                DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1] - 1, color);  // 7
+                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] + 1, color);  // 9
+                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] - 1, color);  // 8
+                DrawPixel(pixels, ballPosition[0], ballPosition[1] + 2, bocca);
+                DrawPixel(pixels, ballPosition[0], ballPosition[1] + 3, bocca);// a
+                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] + 4, bocca);  // b
+            }
+            if (ballSpeed[1] < 0)
+            {
+                DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1], occhi);  // 2
+                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1], occhi);  // 4
+                DrawPixel(pixels, ballPosition[0], ballPosition[1] - 1, color);  // 1
+                DrawPixel(pixels, ballPosition[0], ballPosition[1], color);  // 3
+                DrawPixel(pixels, ballPosition[0], ballPosition[1] + 1, color);  // 5
+                DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1] + 1, color);  // 6
+                DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1] - 1, color);  // 7
+                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] + 1, color);  // 9
+                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] - 1, color);  // 8
+                DrawPixel(pixels, ballPosition[0], ballPosition[1] - 2, bocca);
+                DrawPixel(pixels, ballPosition[0], ballPosition[1] - 3, bocca);// a
+                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] - 4, bocca);  // b
+
+            }
+            else if (ballSpeed[0] == 0 && ballSpeed[1] ==0)
+            {
+                DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1], occhi);  // 2
+                DrawPixel(pixels, ballPosition[0], ballPosition[1] - 1, color);  // 1
+                DrawPixel(pixels, ballPosition[0], ballPosition[1], color);  // 3
+                DrawPixel(pixels, ballPosition[0], ballPosition[1] + 1, color);  // 5
+                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1], occhi);  // 4
+                DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1] + 1, color);  // 6
+                DrawPixel(pixels, ballPosition[0] - 1, ballPosition[1] - 1, color);  // 7
+                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] + 1, color);  // 9
+                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] - 1, color);  // 8
+                DrawPixel(pixels, ballPosition[0], ballPosition[1] + 2, bocca);
+                DrawPixel(pixels, ballPosition[0], ballPosition[1] + 3, bocca);// a
+                DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] + 4, bocca);  // b
+            }
+            
+
+
 
             for (int i = 0; i < N; i++)
             {
