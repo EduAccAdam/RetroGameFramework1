@@ -46,7 +46,7 @@ namespace RetroGameDemo
         float[] ballPosition; // ball position in screen pixels (float to consider also half pixels)
         float[] ballSpeed; // ball speed in pixels per frame (float to consider also half pixels)
 
-        Random random = new Random(Seed:123);
+        Random random = new Random();
 
         int meleMangiate = 0;
 
@@ -534,7 +534,6 @@ namespace RetroGameDemo
                 DrawPixel(pixels, ballPosition[0], ballPosition[1] + 3, bocca);// a
                 DrawPixel(pixels, ballPosition[0] + 1, ballPosition[1] + 4, bocca);  // b
             }
-            
 
 
 
