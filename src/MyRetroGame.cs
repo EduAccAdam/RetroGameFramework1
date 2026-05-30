@@ -46,7 +46,7 @@ namespace RetroGameDemo
         float[] ballPosition; // ball position in screen pixels (float to consider also half pixels)
         float[] ballSpeed; // ball speed in pixels per frame (float to consider also half pixels)
 
-        Random random = new Random();
+        Random random = new Random(Seed:123);
 
         int meleMangiate = 0;
 
@@ -56,15 +56,22 @@ namespace RetroGameDemo
         int[] melaY = new int[] { -1, -1, -1, -1 ,-1, -1, -1, -1, -1 };
         int MaxMele = 1;
 
+        int[] FantasmaX = new int[] { -1 };
+        int[] FantasmaY = new int[] { -1 };
+
         int N = 0;
 
         float[] TestaX = new float[9999];
         float[] TestaY = new float[9999];
 
-        int prob = 0;
+        int probMelaOro = 0;
+
+        int FantasmaInt = 0;
 
         bool Immunita = false;
         int immunitaFrames = 0;
+        int FramesFantasma = 0;
+        
 
         bool end = false;
 
@@ -91,12 +98,29 @@ namespace RetroGameDemo
             {0,0,0,1,1,1,0,0,0},  // punta fondo
         }, AnchorType.Center);
 
-
-
-
         PaintStyle MelaStyle = PaintStyle.Default;
+
+        GameImage Fantasma = new GameImage(new int[,]
+        {
+            {0,0,1,1,1,1,1,0,0},  // testa cima
+            {0,1,2,2,1,1,1,1,0},  // luccichio
+            {1,1,2,2,1,1,1,1,1},  // luccichio
+            {1,1,1,1,1,1,1,1,1},  // corpo pieno
+            {1,5,5,1,1,1,5,5,1},  // occhi
+            {1,5,6,1,1,1,6,5,1},  // pupille rosse
+            {1,1,1,1,1,1,1,1,1},  // corpo pieno
+            {1,1,1,4,4,4,1,1,1},  // bocca
+            {1,1,3,3,1,3,3,1,1},  // ombra fondo
+            {1,3,0,1,3,1,0,3,1},  // frange ondulate
+            {1,0,0,1,0,1,0,0,1},
+        },
+            AnchorType.Center);
+
+        PaintStyle FantasmaStyle = PaintStyle.Default;
+
+        
         PaintStyle MelaGoldenStyle = PaintStyle.Default;
-        PaintStyle MelaPurple = PaintStyle.Default;
+        
 
         //
         //
@@ -109,39 +133,7 @@ namespace RetroGameDemo
         }, AnchorType.Center);
         PaintStyle ballStyle = PaintStyle.Default;
 
-        GameImage starImage = new GameImage(new int[,] {
-            { 0,0,0,0,0,1,0,0,0,0,0 },
-            { 0,0,0,0,0,1,0,0,0,0,0 },
-            { 0,0,0,0,1,1,1,0,0,0,0 },
-            { 1,1,1,1,1,1,1,1,1,1,1 },
-            { 0,0,1,1,1,1,1,1,1,0,0 },
-            { 0,0,0,1,1,1,1,1,0,0,0 },
-            { 0,0,0,1,1,1,1,1,0,0,0 },
-            { 0,0,1,1,0,0,0,1,1,0,0 },
-            { 0,0,1,0,0,0,0,0,1,0,0 }
-        }, AnchorType.Center);
-        PaintStyle starStyle = PaintStyle.Default;
 
- 
-        PaintStyle squareStyle1 = PaintStyle.Default;
-
-        GameImage squareImage2 = GameImage.CreateFromString(
-            "*********\n" +
-            "*       *\r\n"+
-            "* $$$$$ *\n"+
-            "* $   $ *\r\n"+
-            "* $ . $ *\n"+
-            "* $   $ *\r\r\n"+
-            "* $$$$$ *\r\r\r\r\n"+
-            "*       *\r\r\r\n"+
-            "*********",
-        new char[] { ' ', '*', '$', '.' }, AnchorType.Center);
-
-        PaintStyle squareStyle2 = PaintStyle.Default;
-        
-
-        GameImage hearthImage = GameImage.CreateFromResource("hearth", AnchorType.Center);
-        PaintStyle hearthStyle = PaintStyle.Default;
 
         PaintStyle textStyle = PaintStyle.Default;
         //
@@ -180,6 +172,13 @@ namespace RetroGameDemo
                 System.Drawing.Color.LimeGreen,
                 System.Drawing.Color.FromArgb(255, 109, 76, 65),
                 System.Drawing.Color.LightGoldenrodYellow,
+                System.Drawing.Color.FromArgb(255, 220, 230, 255),
+                System.Drawing.Color.FromArgb(255, 255, 255, 255),
+                System.Drawing.Color.FromArgb(255, 100,  80, 160),
+                System.Drawing.Color.FromArgb(255, 140, 110, 200),
+                System.Drawing.Color.FromArgb(255,  20,  20,  40),
+                System.Drawing.Color.FromArgb(255, 220,  40,  40)
+
            };
 
             int melaX = random.Next(6, 151);
@@ -206,15 +205,6 @@ namespace RetroGameDemo
 
             ballStyle.SetColorRemap(1, 2); // start from first additional color;
 
-            squareStyle1.EnsureColorRemapSize(4);
-
-            squareStyle2.SetColorRemap(1, 4);
-            squareStyle2.SetColorRemap(2, 5);
-            squareStyle2.SetColorRemap(3, 6);
-
-            hearthStyle.SetColorRemap(1, 2);
-            hearthStyle.SetColorRemap(2, 8);
-
             MelaStyle.EnsureColorRemapSize(1);
             MelaStyle.SetColorRemap(1,2);
             MelaStyle.EnsureColorRemapSize(2);
@@ -225,15 +215,26 @@ namespace RetroGameDemo
             MelaStyle.SetColorRemap(5, 14);
 
             MelaGoldenStyle.EnsureColorRemapSize(1);
-            MelaGoldenStyle.SetColorRemap(1,10);
+            MelaGoldenStyle.SetColorRemap(1,15);
             MelaGoldenStyle.EnsureColorRemapSize(2);
-            MelaGoldenStyle.SetColorRemap(2, 15);
+            MelaGoldenStyle.SetColorRemap(2, 16);
             MelaGoldenStyle.EnsureColorRemapSize(3);
             MelaGoldenStyle.SetColorRemap(3, 13);
             MelaGoldenStyle.EnsureColorRemapSize(5);
             MelaGoldenStyle.SetColorRemap(5, 14);
 
-            MelaPurple.SetColorRemap(1, 8);
+            FantasmaStyle.EnsureColorRemapSize(1);
+            FantasmaStyle.SetColorRemap(1, 16);  // corpo → #DCE6FF bianco-viola
+            FantasmaStyle.EnsureColorRemapSize(2);
+            FantasmaStyle.SetColorRemap(2, 17);  // luccichio → #FFFFFF bianco puro
+            FantasmaStyle.EnsureColorRemapSize(3);
+            FantasmaStyle.SetColorRemap(3, 18);  // ombra → #6450A0 viola scuro
+            FantasmaStyle.EnsureColorRemapSize(4);
+            FantasmaStyle.SetColorRemap(4, 19);  
+            FantasmaStyle.EnsureColorRemapSize(5);
+            FantasmaStyle.SetColorRemap(5, 20); 
+            FantasmaStyle.EnsureColorRemapSize(6);
+            FantasmaStyle.SetColorRemap(6, 21);
 
             textStyle.SetColorRemap(1,11);
 
@@ -272,9 +273,14 @@ namespace RetroGameDemo
             {
                 if (melaX[m] >= 0 && melaY[m] >= 0)
                 {
-                    if (prob == 1 && m == 0)
+                    if (probMelaOro == 1 && m == 0)
                     {
                         GameUtils.DrawImageOnScreen(pixels, melaImage, new Point(melaX[m], melaY[m]), MelaGoldenStyle);
+                    }
+                    else if (FantasmaInt == 1 && m == 0)
+                    {
+                        GameUtils.DrawImageOnScreen(pixels, Fantasma, new Point(melaX[m], melaY[m]), FantasmaStyle);
+                        FantasmaInt = 0;
                     }
                     else
                     {
@@ -343,10 +349,23 @@ namespace RetroGameDemo
                     melaY[m] = random.Next(7, 101);
                     if (m == 0)
                     {
-                        prob = random.Next(1, 5);
+                        probMelaOro = random.Next(1, 5);
                     }
                 }
             }
+            for (int f = 0; f< 1; f++)
+            {
+                if (FantasmaX[f] <= 0 || FantasmaY[f] <= 0)
+                {
+                    FantasmaX[f] = random.Next(6, 151);
+                    FantasmaY[f] = random.Next(7, 101);
+                    if (f == 0)
+                    {
+                        FantasmaInt = random.Next(1, 5);
+                    }
+                }
+            }
+            
             for (int m = MaxMele; m < melaX.Length; m++)
             {
                 melaX[m] = -1;
@@ -367,7 +386,7 @@ namespace RetroGameDemo
 
             if (Immunita)
             {
-                prob = 0;
+                probMelaOro = 0;
                 immunitaFrames++;
                 if (immunitaFrames == GameConfig.FrameRate * 8)
                 {
@@ -375,6 +394,7 @@ namespace RetroGameDemo
                     immunitaFrames = 0;
                 }
             }
+
 
             // Check hits with screen bounds to make the ball bounce
             // The bounce is cheched with a margin to consider the ball dimension
@@ -433,10 +453,14 @@ namespace RetroGameDemo
                         N += 2;
                     }
 
-                    if (prob == 1 && m == 0)
+                    if (probMelaOro == 1 && m == 0)
                     {
                         Immunita = true;
                         immunitaFrames = 0;
+                    }
+                    else if (FantasmaInt == 1 && m == 0)
+                    {
+                        FramesFantasma = 0;
                     }
                     melaX[m] = -1;
                     melaY[m] = -1;
@@ -444,7 +468,18 @@ namespace RetroGameDemo
 
 
             }
-             
+            for (int f = 0; f < MaxMele; f++)
+            {
+                if ((FantasmaX[f] >= 0 && FantasmaY[f] >= 0 &&
+                    ballPosition[0] >= melaX[f] - 9 &&
+                    ballPosition[0] <= melaX[f] + 9 &&
+                    ballPosition[1] >= melaY[f] - 11 &&
+                    ballPosition[1] <= melaY[f] + 11))
+                {
+                    OnEndGame();
+                }
+
+            }
         }
 
             
