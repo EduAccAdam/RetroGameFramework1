@@ -158,10 +158,10 @@ namespace RetroGameDemo
 
             GameConfig.FrameRate = 20;
 
-            
+            Menù.Menu();
 
             GameConfig.BackgroundColor = System.Drawing.Color.FromArgb(255, 34, 139, 34);
-            
+
             //GameForm.Initializer.ForegroundColor = System.Drawing.Color.White;
             GameConfig.ForegroundColor = System.Drawing.Color.Cyan;
 
@@ -181,10 +181,9 @@ namespace RetroGameDemo
                 System.Drawing.Color.FromArgb(255, 109, 76, 65),
                 System.Drawing.Color.LightGoldenrodYellow,
            };
-            
+
             int melaX = random.Next(6, 151);
             int melaY = random.Next(7, 101);
-            
         }
 
         // Called at the start of the first frame of the game.
