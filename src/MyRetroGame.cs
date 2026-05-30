@@ -56,8 +56,8 @@ namespace RetroGameDemo
 
         int N = 0;
 
-        float[] TestaX = new float[100];
-        float[] TestaY = new float[100];
+        float[] TestaX = new float[9999];
+        float[] TestaY = new float[9999];
 
         int prob = 0;
 
@@ -70,14 +70,22 @@ namespace RetroGameDemo
 
         GameImage melaImage = new GameImage(new int[,]
         {
-            {1,1,1},
-            {1,1,1},
-            {1,1,1}
+            {0,0,0,5,0,0,0,0,0},  // gambo
+            {0,0,5,0,3,3,0,0,0},  // gambo + foglia
+            {0,1,1,1,3,3,3,0,0},  // spalle + foglia
+            {1,2,2,1,1,1,1,1,0},  // luccichio
+            {1,2,2,1,1,1,1,1,1},  // luccichio
+            {1,1,1,1,1,1,1,1,1},  // corpo pieno
+            {1,1,1,1,1,1,1,1,1},  // corpo pieno
+            {0,1,1,1,1,1,1,1,0},  // si restringe
+            {0,1,1,1,1,1,1,1,0},  // si restringe
+            {0,0,1,1,1,1,1,0,0},  // fondo
+            {0,0,0,1,1,1,0,0,0},  // punta fondo
         }, AnchorType.Center);
 
 
 
-        
+
         PaintStyle MelaStyle = PaintStyle.Default;
         PaintStyle MelaGoldenStyle = PaintStyle.Default;
         PaintStyle MelaPurple = PaintStyle.Default;
@@ -120,7 +128,9 @@ namespace RetroGameDemo
             "*       *\r\r\r\n"+
             "*********",
         new char[] { ' ', '*', '$', '.' }, AnchorType.Center);
+
         PaintStyle squareStyle2 = PaintStyle.Default;
+        
 
         GameImage hearthImage = GameImage.CreateFromResource("hearth", AnchorType.Center);
         PaintStyle hearthStyle = PaintStyle.Default;
@@ -158,10 +168,14 @@ namespace RetroGameDemo
                 System.Drawing.Color.Black,
                 System.Drawing.Color.Gold,
                 System.Drawing.Color.White,
+                System.Drawing.Color.HotPink,
+                System.Drawing.Color.LimeGreen,
+                System.Drawing.Color.FromArgb(255, 109, 76, 65),
+                System.Drawing.Color.LightGoldenrodYellow,
            };
 
-            int melaX = random.Next(1, 158);
-            int melaY = random.Next(1, 109);
+            int melaX = random.Next(6, 151);
+            int melaY = random.Next(7, 101);
             
         }
 
@@ -193,10 +207,22 @@ namespace RetroGameDemo
             hearthStyle.SetColorRemap(2, 8);
 
             MelaStyle.EnsureColorRemapSize(1);
-
             MelaStyle.SetColorRemap(1,2);
+            MelaStyle.EnsureColorRemapSize(2);
+            MelaStyle.SetColorRemap(2,12);
+            MelaStyle.EnsureColorRemapSize(3);
+            MelaStyle.SetColorRemap(3, 13);
+            MelaStyle.EnsureColorRemapSize(5);
+            MelaStyle.SetColorRemap(5, 14);
 
+            MelaGoldenStyle.EnsureColorRemapSize(1);
             MelaGoldenStyle.SetColorRemap(1,10);
+            MelaGoldenStyle.EnsureColorRemapSize(2);
+            MelaGoldenStyle.SetColorRemap(2, 15);
+            MelaGoldenStyle.EnsureColorRemapSize(3);
+            MelaGoldenStyle.SetColorRemap(3, 13);
+            MelaGoldenStyle.EnsureColorRemapSize(5);
+            MelaGoldenStyle.SetColorRemap(5, 14);
 
             MelaPurple.SetColorRemap(1, 8);
 
@@ -289,7 +315,6 @@ namespace RetroGameDemo
                 MaxMele = 1;
             }
 
-            //Console.WriteLine(prob);
             for (int i = N - 1; i > 0; i--)
             {
                 TestaX[i] = TestaX[i - 1];
@@ -305,8 +330,8 @@ namespace RetroGameDemo
             {
                 if (melaX[m] < 0 || melaY[m] < 0)
                 {
-                    melaX[m] = random.Next(1, 158);
-                    melaY[m] = random.Next(1, 109);
+                    melaX[m] = random.Next(6, 151);
+                    melaY[m] = random.Next(7, 101);
                     if (m == 0)
                     {
                         prob = random.Next(1, 5);
@@ -369,10 +394,10 @@ namespace RetroGameDemo
             for (int m = 0; m < MaxMele; m++)
             {
                 if ((melaX[m] >= 0 && melaY[m] >= 0 &&
-                    ballPosition[0] >= melaX[m] - 3 &&
-                    ballPosition[0] <= melaX[m] + 3 &&
-                    ballPosition[1] >= melaY[m] - 3 &&
-                    ballPosition[1] <= melaY[m] + 3))
+                    ballPosition[0] >= melaX[m] - 9 &&
+                    ballPosition[0] <= melaX[m] + 9 &&
+                    ballPosition[1] >= melaY[m] - 11 &&
+                    ballPosition[1] <= melaY[m] + 11))
                 {
                     if (N > 0)
                     {
