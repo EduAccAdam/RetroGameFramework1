@@ -20,6 +20,7 @@
 */
 
 using RetroGameFramework;
+using RetroGameFramework.src;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -67,6 +68,9 @@ namespace RetroGameDemo
         bool end = false;
 
         int secondiRimanenti = 0;
+
+        int[] allowedColor = new int[] { 2, 3, 5, 6, 7, 8 };
+        int indexColor = 0;
 
         GameImage melaImage = new GameImage(new int[,]
         {
@@ -173,7 +177,7 @@ namespace RetroGameDemo
                 System.Drawing.Color.FromArgb(255, 109, 76, 65),
                 System.Drawing.Color.LightGoldenrodYellow,
            };
-
+            
             int melaX = random.Next(6, 151);
             int melaY = random.Next(7, 101);
             
@@ -183,6 +187,8 @@ namespace RetroGameDemo
         // It's main purpose it's to setup the scene.
         private void FirstFrameLoop ()
         {
+
+            
             // set the ball in the center of the screen
             ballPosition = new float[] { GameConfig.PixelsMatrixWidth / 2, GameConfig.PixelsMatrixHeight / 2 };
 
@@ -551,15 +557,13 @@ namespace RetroGameDemo
                 }
                 if (KeyCode == Keys.C)
                 {
-                    int tmpColor = ballStyle.GetRemappedColor(PaintStyle.FOREGROUND_COLOR_INDEX);
-                    tmpColor++;
-                    if (tmpColor >= GameConfig.AdditionalColors.Length + 2)
-                        tmpColor = 2;
-                    ballStyle.SetColorRemap(PaintStyle.FOREGROUND_COLOR_INDEX, tmpColor);
-
-                    ballColor++;
-                    if (ballColor >= GameConfig.AdditionalColors.Length + 2)
-                        ballColor = 2;
+                    indexColor++;
+                    if (indexColor >= allowedColor.Length)
+                    {
+                        indexColor = 0;
+                    }
+                    ballColor = allowedColor[indexColor];
+                    ballStyle.SetColorRemap(1, ballColor);
                 }  
             }
             else
