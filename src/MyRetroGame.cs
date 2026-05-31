@@ -71,6 +71,7 @@ namespace RetroGameDemo
         bool Immunita = false;
         int immunitaFrames = 0;
         int FramesFantasma = 0;
+        bool FantasmaBool = false;
         
 
         bool end = false;
@@ -150,7 +151,7 @@ namespace RetroGameDemo
 
             GameConfig.FrameRate = 20;
 
-            Menù.Menu();
+            //Menù.Menu();
 
             GameConfig.BackgroundColor = System.Drawing.Color.FromArgb(255, 34, 139, 34);
 
@@ -280,7 +281,6 @@ namespace RetroGameDemo
                     else if (FantasmaInt == 1 && m == 0)
                     {
                         GameUtils.DrawImageOnScreen(pixels, Fantasma, new Point(melaX[m], melaY[m]), FantasmaStyle);
-                        FantasmaInt = 0;
                     }
                     else
                     {
@@ -350,19 +350,21 @@ namespace RetroGameDemo
                     if (m == 0)
                     {
                         probMelaOro = random.Next(1, 5);
+                        FantasmaInt = random.Next(1, 10);
+                        if (FantasmaInt == 1)
+                        {
+                            FantasmaX[0] = melaX[0];
+                            FantasmaY[0] = melaY[0];
+                            FantasmaBool = true;
+                            FramesFantasma = 0;
+                        }
+                        else
+                        {
+                            FantasmaX[0] = -1;
+                            FantasmaY[0] = -1;
+                        }
                     }
-                }
-            }
-            for (int f = 0; f< 1; f++)
-            {
-                if (FantasmaX[f] <= 0 || FantasmaY[f] <= 0)
-                {
-                    FantasmaX[f] = random.Next(6, 151);
-                    FantasmaY[f] = random.Next(7, 101);
-                    if (f == 0)
-                    {
-                        FantasmaInt = random.Next(1, 5);
-                    }
+                    
                 }
             }
             
@@ -394,7 +396,20 @@ namespace RetroGameDemo
                     immunitaFrames = 0;
                 }
             }
-
+            if (FantasmaBool)
+            {
+                FramesFantasma++;
+                if (FramesFantasma == GameConfig.FrameRate * 3)
+                {
+                    FantasmaBool = false;
+                    FramesFantasma = 0;
+                    FantasmaInt = 0;
+                    FantasmaX[0] = -1; 
+                    FantasmaY[0] = -1; 
+                    melaX[0] = -1;     
+                    melaY[0] = -1;
+                }
+            }
 
             // Check hits with screen bounds to make the ball bounce
             // The bounce is cheched with a margin to consider the ball dimension
@@ -460,7 +475,10 @@ namespace RetroGameDemo
                     }
                     else if (FantasmaInt == 1 && m == 0)
                     {
+                        FantasmaBool = true;
                         FramesFantasma = 0;
+                        meleMangiate--;
+                        OnEndGame();
                     }
                     melaX[m] = -1;
                     melaY[m] = -1;
@@ -468,13 +486,13 @@ namespace RetroGameDemo
 
 
             }
-            for (int f = 0; f < MaxMele; f++)
+            for (int f = 0; f < FantasmaX.Length; f++)
             {
                 if ((FantasmaX[f] >= 0 && FantasmaY[f] >= 0 &&
-                    ballPosition[0] >= melaX[f] - 9 &&
-                    ballPosition[0] <= melaX[f] + 9 &&
-                    ballPosition[1] >= melaY[f] - 11 &&
-                    ballPosition[1] <= melaY[f] + 11))
+                    ballPosition[0] >= FantasmaX[f] - 9 &&
+                    ballPosition[0] <= FantasmaX[f] + 9 &&
+                    ballPosition[1] >= FantasmaY[f] - 11 &&
+                    ballPosition[1] <= FantasmaY[f] + 11))
                 {
                     OnEndGame();
                 }
