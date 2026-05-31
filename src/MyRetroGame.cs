@@ -46,7 +46,7 @@ namespace RetroGameDemo
         float[] ballPosition; // ball position in screen pixels (float to consider also half pixels)
         float[] ballSpeed; // ball speed in pixels per frame (float to consider also half pixels)
 
-        Random random = new Random(Seed:123);
+        Random random = new Random();
 
         int meleMangiate = 0;
 
@@ -151,7 +151,7 @@ namespace RetroGameDemo
 
             GameConfig.FrameRate = 20;
 
-            //Menù.Menu();
+            Menù.Menu();
 
             GameConfig.BackgroundColor = System.Drawing.Color.FromArgb(255, 34, 139, 34);
 
@@ -302,6 +302,11 @@ namespace RetroGameDemo
                 secondiRimanenti = (GameConfig.FrameRate * 8 - immunitaFrames) / GameConfig.FrameRate;
                 Writing.Print(pixels, secondiRimanenti.ToString(), Writing.Top_Left,textStyle);
             }
+            if (FantasmaBool== true)
+            {
+                secondiRimanenti = (GameConfig.FrameRate * 3 - FramesFantasma) / GameConfig.FrameRate;
+                Writing.Print(pixels, secondiRimanenti.ToString(), Writing.Top_Right, textStyle);
+            }
             if (end == true)
             {
                 GameConfig.FrameRate = 0;
@@ -317,6 +322,8 @@ namespace RetroGameDemo
         protected override void OnEndGame()
         {
             end = true;
+            FantasmaBool = false;
+            Immunita = false;
         }
 
         private void UpdateBallPosition()
@@ -350,8 +357,13 @@ namespace RetroGameDemo
                     if (m == 0)
                     {
                         probMelaOro = random.Next(1, 5);
-                        FantasmaInt = random.Next(1, 10);
-                        if (FantasmaInt == 1)
+                        FantasmaInt = random.Next(1, 4);
+
+                        FantasmaBool = false;
+                        FramesFantasma = 0;
+                        FantasmaX[0] = -1;
+                        FantasmaY[0] = -1;
+                        if (FantasmaInt == 1 && probMelaOro != 1)
                         {
                             FantasmaX[0] = melaX[0];
                             FantasmaY[0] = melaY[0];
@@ -360,6 +372,7 @@ namespace RetroGameDemo
                         }
                         else
                         {
+                            FantasmaInt = 0;
                             FantasmaX[0] = -1;
                             FantasmaY[0] = -1;
                         }
@@ -472,6 +485,11 @@ namespace RetroGameDemo
                     {
                         Immunita = true;
                         immunitaFrames = 0;
+                        FantasmaBool = false;  
+                        FramesFantasma = 0;    
+                        FantasmaInt = 0;       
+                        FantasmaX[0] = -1;     
+                        FantasmaY[0] = -1;
                     }
                     else if (FantasmaInt == 1 && m == 0)
                     {
@@ -508,8 +526,7 @@ namespace RetroGameDemo
             // BALL EXAMPLE:    718 
             //                  234 
             //                  659
-            //                   a
-            //                    b
+
             if (ballSpeed[0] > 0)
             {
                 DrawPixel(pixels, ballPosition[0], ballPosition[1] - 1, occhi);  // 1
@@ -702,7 +719,6 @@ namespace RetroGameDemo
 
             }
         }
-
         // Called if a key has been released (even in the same frame it has been released)
         protected override void OnKeyUp(Keys KeyCode)
         {
