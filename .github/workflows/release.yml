@@ -3,11 +3,11 @@ name: Build and Release
 on:
   push:
     tags:
-      - "v*"    # triggers on v1.0.0, v1.2.3, etc.
+      - "v*"
 
 jobs:
   build:
-    runs-on: windows-latest   # .NET Framework only builds on Windows
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -15,22 +15,22 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+
       - name: Restore NuGet packages
         run: nuget restore RetroGameFramework.sln
-        # 👆 change MyGame.sln to your actual .sln filename
 
       - name: Build solution
         run: msbuild RetroGameFramework.sln /p:Configuration=Release
-        # 👆 same here
 
       - name: Zip the output
-        run: Compress-Archive -Path bin/Release/* -DestinationPath MyGame-windows.zip
-        # 👆 change MyGame-windows.zip to whatever you want the download called
+        run: Compress-Archive -Path bin/Release/* -DestinationPath RetroGameFramework-windows.zip
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: SnakeAdam
+          files: RetroGameFramework-windows.zip
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
