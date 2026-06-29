@@ -329,7 +329,7 @@ namespace RetroGameDemo
         {
             if (Immunita)
             {
-                MaxMele = 8;
+                MaxMele = 9;
             }
             else
             {
